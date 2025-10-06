@@ -1,0 +1,5 @@
+name: ${PROJECT_NAME}
+
+include:
+  - path:
+      - "../.devcontainer/compose/compose.yaml"

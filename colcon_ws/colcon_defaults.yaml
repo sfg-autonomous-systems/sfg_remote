@@ -1,0 +1,4 @@
+build:
+  packages-skip:
+    - sfg_depthai
+    - sfg_peripherals_description
