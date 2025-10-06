@@ -1,3 +1,9 @@
 [submodule "colcon_ws/src/sfg_agent_common"]
 	path = colcon_ws/src/sfg_agent_common
 	url = ../../agents/agent-common.git
+[submodule ".devcontainer"]
+	path = .devcontainer
+	url = ../agent-dev-container.git
+[submodule "fast_dds_router"]
+	path = fast_dds_router
+	url = ../fast-dds-router.git
