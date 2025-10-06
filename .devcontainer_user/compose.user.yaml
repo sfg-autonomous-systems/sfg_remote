@@ -3,3 +3,5 @@ name: ${PROJECT_NAME}
 include:
   - path:
       - "../.devcontainer/compose/compose.yaml"
+  - path:
+      - "../fast_dds_router/.devcontainer/compose/compose.yaml"
