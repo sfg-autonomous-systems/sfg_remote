@@ -1,9 +1,6 @@
 [submodule "colcon_ws/src/sfg_agent_common"]
 	path = colcon_ws/src/sfg_agent_common
 	url = ../agent-common.git
-[submodule ".devcontainer"]
-	path = .devcontainer
-	url = ../agent-devcontainer.git
 [submodule "colcon_ws/src/sfg_imgui_vendor"]
 	path = colcon_ws/src/sfg_imgui_vendor
 	url = ../../tools/imgui-vendor.git
