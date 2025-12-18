@@ -4,3 +4,6 @@
 [submodule "colcon_ws/src/sfg_imgui_vendor"]
 	path = colcon_ws/src/sfg_imgui_vendor
 	url = ../../tools/imgui-vendor.git
+[submodule ".devcontainer"]
+	path = .devcontainer
+	url = https://gitlab.hs-esslingen.de/smart-factory-grids/autonomous-systems/agents/agent-devcontainer.git
