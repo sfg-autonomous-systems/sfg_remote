@@ -1,3 +1,0 @@
-FROM sfg-agent-devcontainer AS sfg-universal-remote-control
-
-# Your dockerfile content goes here...
