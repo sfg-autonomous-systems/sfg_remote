@@ -10,10 +10,11 @@ RUN sudo apt-get update && \
 
 WORKDIR ${WORKSPACE_DIRECTORY}
 
-CMD ["sleep", "infinity"]
+# CMD ["sleep", "infinity"]
 
-# CMD "${REPOSITORY_DIRECTORY}/.devcontainer/scripts/post_start_command" && \
-#   source "/opt/ros/${ROS_DISTRO}/setup.bash" && \
-#   cd "${REPOSITORY_DIRECTORY}/colcon_ws" && \
-#   source "install/setup.bash" && \
+CMD "${REPOSITORY_DIRECTORY}/.devcontainer/scripts/post_start_command" && \
+    source "/opt/ros/${ROS_DISTRO}/setup.bash" && \
+    cd "${REPOSITORY_DIRECTORY}/colcon_ws" && \
+    source "install/setup.bash" && \
+    sleep inifinity 
 #   ros2 launch sfg_remote_bringup "bringup.launch.py"
