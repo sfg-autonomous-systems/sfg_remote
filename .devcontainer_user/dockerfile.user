@@ -15,6 +15,7 @@ WORKDIR ${WORKSPACE_DIRECTORY}
 CMD "${REPOSITORY_DIRECTORY}/.devcontainer/scripts/post_start_command" && \
     source "/opt/ros/${ROS_DISTRO}/setup.bash" && \
     cd "${REPOSITORY_DIRECTORY}/colcon_ws" && \
+    colcon build && \
     source "install/setup.bash" && \
-    sleep inifinity 
+    sleep infinity
 #   ros2 launch sfg_remote_bringup "bringup.launch.py"
