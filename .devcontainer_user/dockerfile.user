@@ -1,6 +1,19 @@
 FROM sfg-agent-devcontainer AS sfg-sfg-universal-remote-control
 
-# Your dockerfile content goes here...
+WORKDIR ${HOME}/dependencies
+
+# Install SDL2 developer packages
+RUN sudo apt-get update && \
+    sudo apt-get install -y --no-install-recommends libsdl2-dev && \
+    sudo apt-get -y clean && \
+    sudo rm -rf /var/cache/apt /var/lib/apt/lists/*
+
 WORKDIR ${WORKSPACE_DIRECTORY}
 
 CMD ["sleep", "infinity"]
+
+# CMD "${REPOSITORY_DIRECTORY}/.devcontainer/scripts/post_start_command" && \
+#   source "/opt/ros/${ROS_DISTRO}/setup.bash" && \
+#   cd "${REPOSITORY_DIRECTORY}/colcon_ws" && \
+#   source "install/setup.bash" && \
+#   ros2 launch sfg_remote_bringup "bringup.launch.py"
