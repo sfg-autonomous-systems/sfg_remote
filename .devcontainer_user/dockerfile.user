@@ -2,11 +2,29 @@ FROM sfg-agent-devcontainer AS sfg-sfg-universal-remote-control
 
 WORKDIR ${HOME}/dependencies
 
-# Install SDL2 developer packages
+# Install SDL dependencies and developer packages
 RUN sudo apt-get update && \
-    sudo apt-get install -y --no-install-recommends libsdl2-dev && \
+    sudo apt-get install -y --no-install-recommends ninja-build libsdl2-dev \
+        gnome-desktop-testing libasound2-dev libpulse-dev \
+        libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+        libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+        libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+        libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev \
+        libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev && \
     sudo apt-get -y clean && \
-    sudo rm -rf /var/cache/apt /var/lib/apt/lists/*
+    sudo rm -rf /var/cache/apt && \
+    sudo rm -rf /var/lib/apt/lists/*
+
+# Build SDL3 from source and install
+RUN git clone -b "release-3.2.28" --depth 1 https://github.com/libsdl-org/SDL && \
+    cmake -S "SDL" -B "SDL/build" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST=OFF && \
+    cmake --build "SDL/build" --parallel && \
+    sudo cmake --install "SDL/build" && sudo ldconfig
+
+# Delete build files
+RUN sudo rm -rf ${HOME}/dependencies
 
 WORKDIR ${WORKSPACE_DIRECTORY}
 
