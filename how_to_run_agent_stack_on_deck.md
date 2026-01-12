@@ -1,6 +1,8 @@
 # Host: Run initialize_command. Only required once. (mount /tmp, pick ROS domain ID 100 twice)
 #   .devcontainer/scripts/initialize_command LOCAL_WORKSPACE_DIRECTORY=${PWD} CONTAINER_WORKSPACE_DIRECTORY=/workspace
 
+# Host: If on nvidia platform, manually change PLATFORM=generic in .devcontainer_user/.env file 
+
 # Host: cd to devcontainer_user directory and start the compose stack with compose up -f compose.user.yaml.
 #   cd .devcontainer_user/
 #   podman compose -f compose.user.yaml build --no-cache
