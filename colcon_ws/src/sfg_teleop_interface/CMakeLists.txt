@@ -24,6 +24,15 @@ target_compile_features(remote_control_station PUBLIC c_std_99 cxx_std_17) # Req
 install(TARGETS remote_control_station
   DESTINATION lib/${PROJECT_NAME})
 
+# ########################################################################################################
+# Add other files/directories.                                                                           #
+# ########################################################################################################
+install(DIRECTORY
+  "config"
+  "launch"
+  DESTINATION "share/${PROJECT_NAME}/"
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
 
