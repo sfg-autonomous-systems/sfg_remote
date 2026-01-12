@@ -1,10 +1,10 @@
-#include <cstdio>
+#include <iostream>
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
-  printf("hello world sfg_teleop_interface package\n");
+  std::cout << "hello from remote control client ROS node\n";
   return 0;
 }
