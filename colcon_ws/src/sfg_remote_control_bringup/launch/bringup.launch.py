@@ -23,12 +23,6 @@ def generate_launch_description() -> launch.LaunchDescription:
 
     return launch.LaunchDescription(
         [
-            SetLaunchConfiguration(
-                "metadata_filepath",
-                PathJoinSubstitution(
-                    [FindPackageShare(package_name), "config", "agent_metadata.yaml"]
-                ),
-            ),
             *agent_launch_description_entities.launch_arguments,
             *agent_launch_description_entities.nodes,
             ComposableNodeContainer(
