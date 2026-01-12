@@ -1,10 +1,6 @@
 import launch
 import sfg_utils.launch_utils
-from launch.actions import IncludeLaunchDescription, SetLaunchConfiguration
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
-from launch_ros.actions import ComposableNodeContainer, PushRosNamespace
-from launch_ros.substitutions import FindPackageShare
+from launch_ros.actions import ComposableNodeContainer
 from rospkg import get_package_name
 from sfg_utils.fqn import RosFqnBuilder, RosFqnSegment, Scope
 
@@ -33,7 +29,7 @@ def generate_launch_description() -> launch.LaunchDescription:
                 ),
                 name="bringup_container",
                 output="screen",
-                composable_node_descriptions=agent_launch_description_entities.composable_nodes
-            )
+                composable_node_descriptions=agent_launch_description_entities.composable_nodes,
+            ),
         ]
     )
