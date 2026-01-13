@@ -36,6 +36,7 @@ namespace sfg_teleop_interface
         bool InitGamepad();
 
         void Update();
+        void Draw();
         void Render();
 
     private:
