@@ -4,6 +4,10 @@
 #include <memory>
 #include <iostream>
 
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3/SDL_joystick.h>
+
 #include "sfg_teleop_interface/ros_pump.hpp"
 
 // compile options
@@ -35,7 +39,12 @@ namespace sfg_teleop_interface
         void Render();
 
     private:
+        SDL_Window *m_window;
+        SDL_DisplayID m_displayId = 0;
+        SDL_Renderer *m_renderer;
+        SDL_Gamepad *m_gamepad;
+
+        bool m_running = false;
         RosPump m_ros;
-        bool m_running;
     };
 }
