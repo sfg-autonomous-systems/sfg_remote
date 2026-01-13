@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.8)
 project(sfg_teleop_interface)
 
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -14,12 +19,14 @@ find_package(sensor_msgs REQUIRED)
 find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
 
-# ...
+# ########################################################################################################
+# Add nodes and libraries.                                                                               #
+# ########################################################################################################
 add_executable(remote_control_station src/remote_control_station.cpp)
+ament_target_dependencies(remote_control_station rclcpp)
 target_include_directories(remote_control_station PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_compile_features(remote_control_station PUBLIC c_std_99 cxx_std_17) # Require C99 and C++17
 
 install(TARGETS remote_control_station
   DESTINATION lib/${PROJECT_NAME})
