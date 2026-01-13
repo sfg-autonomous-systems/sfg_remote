@@ -10,14 +10,6 @@ namespace sfg_teleop_interface
 
     void RemoteControlStation::PrintHelloMessage()
     {
-        std::cout << "Hello from remote control client ROS node\n";
+        std::cout << "Hello from remote control client ROS node. \n";
     }
-}
-
-int main(int argc, char **argv)
-{
-    rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<sfg_teleop_interface::RemoteControlStation>());
-    rclcpp::shutdown();
-    return 0;
 }

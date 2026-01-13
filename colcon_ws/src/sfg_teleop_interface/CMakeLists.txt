@@ -22,7 +22,12 @@ find_package(sfg_utils REQUIRED)
 # ########################################################################################################
 # Add nodes and libraries.                                                                               #
 # ########################################################################################################
-add_executable(remote_control_station src/remote_control_station.cpp)
+add_executable(remote_control_station
+  src/remote_control_station.cpp
+  src/ros_pump.cpp
+  src/application.cpp
+  src/main.cpp
+)
 ament_target_dependencies(remote_control_station rclcpp)
 target_include_directories(remote_control_station PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
