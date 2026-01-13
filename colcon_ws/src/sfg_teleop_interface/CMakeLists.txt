@@ -28,8 +28,6 @@ install(TARGETS remote_control_station
 # Add other files/directories.                                                                           #
 # ########################################################################################################
 install(DIRECTORY
-  "config"
-  "launch"
   DESTINATION "share/${PROJECT_NAME}/"
 )
 
