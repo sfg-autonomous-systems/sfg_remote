@@ -20,11 +20,9 @@ namespace sfg_teleop_interface
 
         if (this->m_renderer != nullptr)
         {
-            /*
             ImGui_ImplSDLRenderer3_Shutdown();
             ImGui_ImplSDL3_Shutdown();
             ImGui::DestroyContext();
-            */
 
             SDL_DestroyRenderer(this->m_renderer);
             this->m_renderer = nullptr;
@@ -229,7 +227,42 @@ namespace sfg_teleop_interface
 
     bool Application::InitGamepad()
     {
-        return true;
+        // List all detected joysticks
+        int numJoysticks = 0;
+        JoystickIdPtr joystickIdList(SDL_GetJoysticks(&numJoysticks));
+
+        std::cout << "Found " << numJoysticks << " joystick(s) \n";
+
+        // Open each joystick that can be interpreted as a Gamepad
+        for (int i = 0; i < numJoysticks; i++)
+        {
+            SDL_JoystickID jid = joystickIdList.get()[i];
+            if (SDL_IsGamepad(jid))
+            {
+                this->m_gamepad = SDL_OpenGamepad(jid);
+                if (!this->m_gamepad)
+                {
+                    std::cerr << "Failed to open gamepad " << jid
+                              << ": " << SDL_GetError() << "\n";
+                    continue;
+                }
+
+                const char *name = SDL_GetGamepadName(this->m_gamepad);
+                SDL_GamepadType type = SDL_GetGamepadType(this->m_gamepad);
+
+                std::cout << "Opened gamepad ID " << jid
+                          << " | Name: " << (name ? name : "Unknown")
+                          << " | Type: " << type << "\n";
+
+                return true;
+            }
+            else
+            {
+                std::cout << "Joystick ID " << jid << " is not recognized as a gamepad \n";
+            }
+        }
+
+        return false;
     }
 
     void Application::Update()
@@ -240,7 +273,7 @@ namespace sfg_teleop_interface
         while (SDL_PollEvent(&event))
         {
             // pass through events to ImGUI
-            // ImGui_ImplSDL3_ProcessEvent(&event);
+            ImGui_ImplSDL3_ProcessEvent(&event);
 
             // process based on the event type
             if (event.type == SDL_EVENT_QUIT ||
@@ -258,11 +291,35 @@ namespace sfg_teleop_interface
         }
 
         // update data for 2D GUI overlay elements here
-        // ...
+        // ImGuiIO &io = ImGui::GetIO();
+        // this->m_perf_stats.average_fps = io.Framerate;
+        // this->m_perf_stats.average_frametime = 1000.0f / io.Framerate;
     }
 
     void Application::Draw()
     {
+        // ImGuiIO &io = ImGui::GetIO();
+
+        ImGui_ImplSDLRenderer3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::SetNextWindowBgAlpha(0.3f);
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+                                 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+                                 ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+        ImGui::Begin("Simple perf monitor", NULL, flags);
+
+        // render overlay text in the corner
+        ImGui::Text("Hello World!");
+        // ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", this->m_perf_stats.average_frametime, this->m_perf_stats.average_fps);
+        // ImGui::Text("Video fps: %.1f", this->m_video_decoder.GetVideoFPS());
+
+        // render Gui elements code goes here
+        // ...
+
+        ImGui::End();
+        ImGui::Render();
     }
 
     void Application::Render()
@@ -270,7 +327,8 @@ namespace sfg_teleop_interface
         this->Draw();
 
         // clear the render target (backbuffer)
-        // SDL_SetRenderScale(this->m_renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+        ImGuiIO &io = ImGui::GetIO();
+        SDL_SetRenderScale(this->m_renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
         SDL_SetRenderDrawColorFloat(this->m_renderer, 255.0f, 255.0f, 255.0f, 1.0f);
         SDL_RenderClear(this->m_renderer);
 
@@ -279,7 +337,7 @@ namespace sfg_teleop_interface
         SDL_GetWindowSize(this->m_window, &width, &height);
 
         // render GUI elements on top of the scene
-        // ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), this->m_renderer);
+        ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), this->m_renderer);
 
         // present rendered frame
         SDL_RenderPresent(this->m_renderer);

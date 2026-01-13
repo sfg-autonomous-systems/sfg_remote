@@ -8,6 +8,10 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_joystick.h>
 
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlrenderer3.h>
+
 #include "sfg_teleop_interface/ros_pump.hpp"
 
 // compile options
@@ -19,6 +23,17 @@ namespace sfg_teleop_interface
     const int window_width = 1280;
     const int window_height = 720;
     const uint32_t min_frame_time_ms = 2;
+
+    struct JoystickIdDel
+    {
+        void operator()(SDL_JoystickID *p) const noexcept
+        {
+            if (p)
+                SDL_free(p);
+        }
+    };
+
+    using JoystickIdPtr = std::unique_ptr<SDL_JoystickID, JoystickIdDel>;
 
     class Application
     {

@@ -24,7 +24,20 @@ pkg_check_modules(SDL3 REQUIRED sdl3)
 # ########################################################################################################
 # Add nodes and libraries.                                                                               #
 # ########################################################################################################
+# ImGui directories
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
+set(IMGUI_BACKENDS ${IMGUI_DIR}/backends)
+
 add_executable(remote_control_station
+
+    # Imgui sources
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_BACKENDS}/imgui_impl_sdl3.cpp
+    ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
+
     src/remote_control_station.cpp
     src/ros_pump.cpp
     src/application.cpp
@@ -34,7 +47,10 @@ ament_target_dependencies(remote_control_station rclcpp ${SDL3_LIBRARIES})
 target_include_directories(remote_control_station PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include> PRIVATE
-    ${SDL3_INCLUDE_DIRS})
+    ${IMGUI_DIR}
+    ${IMGUI_BACKENDS}
+    ${SDL3_INCLUDE_DIRS}
+)
 
 install(TARGETS remote_control_station
     DESTINATION lib/${PROJECT_NAME})
