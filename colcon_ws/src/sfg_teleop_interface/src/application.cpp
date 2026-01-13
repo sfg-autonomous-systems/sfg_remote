@@ -14,6 +14,24 @@ namespace sfg_teleop_interface
 
     bool Application::Init()
     {
+        bool result = this->InitGui();
+        if (!result)
+        {
+            return false;
+        }
+
+        result = this->InitGamepad();
+        if (!result)
+        {
+            return false;
+        }
+
+        // init additional stuff here
+        // ...
+
+        // show application window
+        // ...
+
         return true;
     }
 
