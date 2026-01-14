@@ -2,8 +2,8 @@
 
 namespace sfg_teleop_interface
 {
-    const double max_linear_velocity = 3.5;  // in m/s
-    const double max_angular_velocity = 0.1; // in rad/s
+    const double max_linear_velocity = 3.0;  // in m/s
+    const double max_angular_velocity = 1.5; // in rad/s
     const double max_stick_val_abs = 32767;
 
     ControlCommandPublisher::ControlCommandPublisher() : rclcpp::Node("control_command_publisher")
@@ -22,35 +22,46 @@ namespace sfg_teleop_interface
         right_stick_x /= max_stick_val_abs;
         right_stick_y /= max_stick_val_abs;
 
-        // upper clamping
+        // upper and lower clamping
         if (left_stick_x > 1.0)
             left_stick_x = 1.0;
+        if (left_stick_x < -1.0)
+            left_stick_x = -1.0;
         if (left_stick_y > 1.0)
             left_stick_y = 1.0;
+        if (left_stick_y < -1.0)
+            left_stick_y = -1.0;
         if (right_stick_x > 1.0)
             right_stick_x = 1.0;
+        if (right_stick_x < -1.0)
+            right_stick_x = -1.0;
         if (right_stick_y > 1.0)
             right_stick_y = 1.0;
+        if (right_stick_y < -1.0)
+            right_stick_y = -1.0;
 
         // center sensitivity deadzone
-        if (left_stick_x < 0.1)
+        if (abs(left_stick_x) < 0.4)
             left_stick_x = 0.0;
-        if (left_stick_y < 0.1)
+        if (abs(left_stick_y) < 0.1)
             left_stick_y = 0.0;
-        if (right_stick_x < 0.1)
+        if (abs(right_stick_x) < 0.2)
             right_stick_x = 0.0;
-        if (right_stick_y < 0.1)
+        if (abs(right_stick_y) < 0.2)
             right_stick_y = 0.0;
 
         // construct twist message and publish
         geometry_msgs::msg::TwistStamped t_cmd;
-        t_cmd.twist.linear.x = left_stick_y * max_linear_velocity; // moving back and forth
-        t_cmd.twist.linear.y = left_stick_x * max_linear_velocity; // moving sideways
-        t_cmd.twist.linear.z = 0.0;                                // moving up and down
+        t_cmd.twist.linear.x = -left_stick_y * max_linear_velocity; // moving back and forth
+        t_cmd.twist.linear.y = left_stick_x * max_linear_velocity;  // moving sideways
+        // t_cmd.twist.linear.y = 0.0;
+        t_cmd.twist.linear.z = 0.0; // moving up and down
 
         t_cmd.twist.angular.x = 0.0;                                  // turning sideways (roll)
         t_cmd.twist.angular.y = right_stick_y * max_angular_velocity; // turning up and down (pitch)
-        t_cmd.twist.angular.z = right_stick_x * max_angular_velocity; // turning left and right (yaw)
+        // t_cmd.twist.angular.y = 0.0;
+        t_cmd.twist.angular.z = -right_stick_x * max_angular_velocity; // turning left and right (yaw)
+        // t_cmd.twist.angular.z = 0.0;
         t_cmd.header.stamp = now();
         this->m_pub_control->publish(t_cmd);
         // std::cout << "Published control command. \n";

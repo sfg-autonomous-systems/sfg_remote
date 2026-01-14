@@ -24,7 +24,7 @@ namespace sfg_teleop_interface
 {
     const int window_width = 1280;
     const int window_height = 720;
-    const uint32_t min_frame_time_ms = 2;
+    const uint32_t min_frame_time_ms = 15;
 
     struct JoystickIdDel
     {
