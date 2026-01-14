@@ -80,7 +80,7 @@ namespace sfg_teleop_interface
 
             // peform ROS2 related I/O
             ((ControlCommandPublisher *)m_control_node.get())->PublishCommand(m_left_stick.x_axis_val, m_left_stick.y_axis_val, m_right_stick.x_axis_val, m_right_stick.y_axis_val);
-            this->m_ros.Poll(std::chrono::microseconds(800));
+            this->m_ros.Poll(std::chrono::microseconds(500));
 
             this->Render();
 
@@ -94,7 +94,7 @@ namespace sfg_teleop_interface
     bool Application::InitGui()
     {
         // set descriptive metadata about application
-        if (!SDL_SetAppMetadata("", "", ""))
+        if (!SDL_SetAppMetadata("SFG Teleoperation Center", "0.0.0", ""))
         {
             SDL_Log("SDL3 Error: %s", SDL_GetError());
         }
