@@ -12,11 +12,12 @@
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 
-#include "sfg_teleop_interface/ros_pump.hpp"
 #include "sfg_teleop_interface/types.hpp"
+#include "sfg_teleop_interface/ros_pump.hpp"
+#include "sfg_teleop_interface/control_command_publisher.hpp"
 
 // compile options
-#define _USE_FULLSCREEN
+// #define _USE_FULLSCREEN
 // #define _USE_ADAPTIVE_SYNC
 
 namespace sfg_teleop_interface
@@ -67,6 +68,8 @@ namespace sfg_teleop_interface
 
         float m_framerate = 0.0f;
         bool m_running = false;
+
         RosPump m_ros;
+        ControlCommandPublisher::SharedPtr m_control_node;
     };
 }

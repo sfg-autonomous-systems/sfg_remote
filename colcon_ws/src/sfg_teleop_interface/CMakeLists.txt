@@ -15,7 +15,8 @@ endif()
 # ########################################################################################################
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -38,12 +39,12 @@ add_executable(remote_control_station
     ${IMGUI_BACKENDS}/imgui_impl_sdl3.cpp
     ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
 
-    src/remote_control_station.cpp
+    src/control_command_publisher.cpp
     src/ros_pump.cpp
     src/application.cpp
     src/main.cpp
 )
-ament_target_dependencies(remote_control_station rclcpp ${SDL3_LIBRARIES})
+ament_target_dependencies(remote_control_station ${SDL3_LIBRARIES} rclcpp std_msgs geometry_msgs)
 target_include_directories(remote_control_station PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include> PRIVATE
