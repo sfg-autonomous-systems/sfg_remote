@@ -347,4 +347,48 @@ namespace sfg_teleop_interface
         // present rendered frame
         SDL_RenderPresent(this->m_renderer);
     }
+
+    const SDL_DisplayMode *Application::GetFullscreenMode() const
+    {
+        // Get all fullscreen modes for the display
+        int count = 0;
+        SDL_DisplayMode **modes = SDL_GetFullscreenDisplayModes(this->m_displayId, &count);
+        if (!modes || count == 0)
+        {
+            SDL_Log("No fullscreen modes found, using desktop mode.");
+            return SDL_GetDesktopDisplayMode(this->m_displayId);
+        }
+
+        // Find the maximum resolution (by pixel area), then within those pick max refresh rate.
+        // Many panels list multiple timings for the same resolution; we pick the highest Hz.
+        const SDL_DisplayMode *best = modes[0];
+        auto area = [](const SDL_DisplayMode *m)
+        { return 1LL * m->w * m->h; };
+
+        // First determine the maximum pixel area available
+        long long max_area = 0;
+        for (int i = 0; i < count; ++i)
+        {
+            max_area = std::max(max_area, area(modes[i]));
+        }
+
+        // Among modes having that area, pick the highest refresh rate; break ties by pixel format preference if you want.
+        int best_hz = 0;
+        for (int i = 0; i < count; ++i)
+        {
+            if (area(modes[i]) == max_area)
+            {
+                // int hz = (int)SDL_GetDisplayModeRefreshRate(modes[i]); // returns Hz as int
+                int hz = static_cast<int>(modes[i]->refresh_rate);
+                if (hz > best_hz)
+                {
+                    best_hz = hz;
+                    best = modes[i];
+                }
+            }
+        }
+
+        return best; // NOTE: pointer is owned by SDL; don't free it.
+    }
+
 }

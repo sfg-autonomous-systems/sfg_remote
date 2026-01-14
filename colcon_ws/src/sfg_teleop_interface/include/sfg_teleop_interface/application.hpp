@@ -16,7 +16,7 @@
 #include "sfg_teleop_interface/types.hpp"
 
 // compile options
-// #define _USE_FULLSCREEN
+#define _USE_FULLSCREEN
 // #define _USE_ADAPTIVE_SYNC
 
 namespace sfg_teleop_interface
@@ -50,6 +50,7 @@ namespace sfg_teleop_interface
     private:
         bool InitGui();
         bool InitGamepad();
+        const SDL_DisplayMode *GetFullscreenMode() const;
 
         void Update();
         void Draw();
