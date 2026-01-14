@@ -16,7 +16,7 @@ RUN sudo apt-get update && \
     sudo rm -rf /var/lib/apt/lists/*
 
 # Build SDL3 from source and install
-RUN git clone -b "release-3.2.28" --depth 1 https://github.com/libsdl-org/SDL && \
+RUN git clone -b "release-3.4.0" --depth 1 https://github.com/libsdl-org/SDL && \
     cmake -S "SDL" -B "SDL/build" \
           -DCMAKE_BUILD_TYPE=Release \
           -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST=OFF && \
