@@ -40,6 +40,7 @@ add_executable(remote_control_station
     ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
 
     src/control_command_publisher.cpp
+    src/telemetry_subscriber.cpp
     src/ros_pump.cpp
     src/application.cpp
     src/main.cpp
