@@ -13,6 +13,7 @@
 #include <imgui_impl_sdlrenderer3.h>
 
 #include "sfg_teleop_interface/ros_pump.hpp"
+#include "sfg_teleop_interface/types.hpp"
 
 // compile options
 // #define _USE_FULLSCREEN
@@ -60,6 +61,10 @@ namespace sfg_teleop_interface
         SDL_Renderer *m_renderer;
         SDL_Gamepad *m_gamepad;
 
+        AnalogStickState m_left_stick = {};
+        AnalogStickState m_right_stick = {};
+
+        float m_framerate = 0.0f;
         bool m_running = false;
         RosPump m_ros;
     };

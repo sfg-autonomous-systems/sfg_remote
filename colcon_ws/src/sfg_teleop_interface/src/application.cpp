@@ -290,16 +290,20 @@ namespace sfg_teleop_interface
             m_running = false;
         }
 
+        // sample stick positions
+        this->m_left_stick.x_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX);
+        this->m_left_stick.y_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY);
+        this->m_right_stick.x_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX);
+        this->m_right_stick.y_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY);
+
         // update data for 2D GUI overlay elements here
-        // ImGuiIO &io = ImGui::GetIO();
-        // this->m_perf_stats.average_fps = io.Framerate;
+        ImGuiIO &io = ImGui::GetIO();
+        this->m_framerate = io.Framerate;
         // this->m_perf_stats.average_frametime = 1000.0f / io.Framerate;
     }
 
     void Application::Draw()
     {
-        // ImGuiIO &io = ImGui::GetIO();
-
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
@@ -311,8 +315,9 @@ namespace sfg_teleop_interface
         ImGui::Begin("Simple perf monitor", NULL, flags);
 
         // render overlay text in the corner
-        ImGui::Text("Hello World!");
-        // ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", this->m_perf_stats.average_frametime, this->m_perf_stats.average_fps);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", (1000.0f / this->m_framerate), this->m_framerate);
+        ImGui::Text("Left  Stick:  X = %d | Y = %d", this->m_left_stick.x_axis_val, this->m_left_stick.y_axis_val);
+        ImGui::Text("Right Stick:  X = %d | Y = %d", this->m_right_stick.x_axis_val, this->m_right_stick.y_axis_val);
         // ImGui::Text("Video fps: %.1f", this->m_video_decoder.GetVideoFPS());
 
         // render Gui elements code goes here
