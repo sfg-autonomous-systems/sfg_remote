@@ -13,7 +13,8 @@ namespace sfg_teleop_interface
         this->m_control_node = std::make_shared<ControlCommandPublisher>();
         this->m_ros.Add_Node(m_control_node);
 
-        ((ControlCommandPublisher *)m_control_node.get())->ChangeRobot("sfg_go2_01");
+        ((ControlCommandPublisher *)m_control_node.get())->ChangeRobotName("sfg_go2_01");
+        ((ControlCommandPublisher *)m_control_node.get())->Arm();
     }
 
     Application::~Application()
@@ -79,7 +80,7 @@ namespace sfg_teleop_interface
             this->Update();
 
             // peform ROS2 related I/O
-            ((ControlCommandPublisher *)m_control_node.get())->PublishCommand(m_left_stick.x_axis_val, m_left_stick.y_axis_val, m_right_stick.x_axis_val, m_right_stick.y_axis_val);
+            ((ControlCommandPublisher *)m_control_node.get())->PublishMoveCommand(m_left_stick.x_axis_val, m_left_stick.y_axis_val, m_right_stick.x_axis_val, m_right_stick.y_axis_val);
             this->m_ros.Poll(std::chrono::microseconds(500));
 
             this->Render();

@@ -12,8 +12,12 @@ namespace sfg_teleop_interface
         this->m_pub_control = this->create_publisher<geometry_msgs::msg::TwistStamped>(topic_name, 10);
     }
 
-    void ControlCommandPublisher::PublishCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y)
+    void ControlCommandPublisher::PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y)
     {
+        // abort if robot disarmed
+        if (!this->m_isArmed)
+            return;
+
         // linear mapping of stick positions onto target velocities (max stick position eql. to max velocity) //
 
         // normalise stick positions to range -1.0 to 1.0
@@ -67,7 +71,23 @@ namespace sfg_teleop_interface
         // std::cout << "Published control command. \n";
     }
 
-    void ControlCommandPublisher::ChangeRobot(const std::string &robot_name)
+    void ControlCommandPublisher::Arm()
+    {
+        // request arm service
+        // ...
+
+        this->m_isArmed = true;
+    }
+
+    void ControlCommandPublisher::Disarm()
+    {
+        // request disarm service
+        // ...
+
+        this->m_isArmed = false;
+    }
+
+    void ControlCommandPublisher::ChangeRobotName(const std::string &robot_name)
     {
         // construct full topic name
         std::string topic_name = "/global/" + robot_name + "/locomotion_controller/cmd_vel";

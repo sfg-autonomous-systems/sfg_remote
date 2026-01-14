@@ -12,10 +12,13 @@ namespace sfg_teleop_interface
     {
     public:
         explicit ControlCommandPublisher();
-        void PublishCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);
-        void ChangeRobot(const std::string &robot_name);
+        void ChangeRobotName(const std::string &robot_name);
+        void PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);
+        void Arm();
+        void Disarm();
 
     private:
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr m_pub_control;
+        bool m_isArmed = false;
     };
 }
