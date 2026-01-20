@@ -13,7 +13,7 @@ namespace sfg_teleop_interface
         this->m_control_node = std::make_shared<ControlCommandPublisher>();
         this->m_ros.Add_Node(m_control_node);
 
-        ((ControlCommandPublisher *)m_control_node.get())->ChangeRobotName("sfg_go2_01");
+        ((ControlCommandPublisher *)m_control_node.get())->ChangeRobotName(robot_name);
         ((ControlCommandPublisher *)m_control_node.get())->Arm();
     }
 
