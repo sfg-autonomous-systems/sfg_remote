@@ -1,6 +1,6 @@
 import sfg_utils.launch_utils
 from launch import LaunchDescription
-from launch.substitution import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 from launch_ros.substitutions import FindPackageShare
@@ -64,8 +64,12 @@ def generate_launch_description() -> LaunchDescription:
                     RosFqnSegment.Scope, RosFqnSegment.Agent
                 ),
                 name="bringup_container",
+                composable_node_descriptions=(
+                    *agent_launch_description_entities.composable_nodes,
+                    agent_discoverer_node,
+                    agent_decoder_node,
+                ),
                 output="screen",
-                composable_node_descriptions=agent_launch_description_entities.composable_nodes,
             ),
         ]
     )
