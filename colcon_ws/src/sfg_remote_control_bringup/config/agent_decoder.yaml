@@ -1,0 +1,12 @@
+/**:
+  ros__parameters:
+    camera_decoder_parameters:
+      # For some reason CPU based decoding using h264 is faster than using
+      # GPU based decoding via h264_cuvid. I'm not entirely sure why.
+      # Perhaps this is due to the overhead of transferring the data to and
+      # from the GPU for each image. Anyways, this is why we use h264 here.
+      in.ffmpeg.decoders.h264: h264
+
+    camera_info_relay_parameters:
+      # No parameters for the camera info relay at the moment.
+      {}
