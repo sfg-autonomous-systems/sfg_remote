@@ -50,7 +50,7 @@ namespace sfg_teleop_interface
         explicit VideoFrameStreamerNode();
         ~VideoFrameStreamerNode() override;
 
-        void RenderVideoFrame(const SDL_FRect &destination);
+        void RenderVideoFrame(const int window_width, const int window_height);
 
         // Getter & Setter
         void ChangeRobotName(const std::string &name);
@@ -58,6 +58,7 @@ namespace sfg_teleop_interface
 
     private:
         void OnImageReceived(const sensor_msgs::msg::Image::ConstSharedPtr &msg);
+        SDL_FRect AspectFitRect(int win_w, int win_h) const;
 
     private:
         // Renderer and Texture state

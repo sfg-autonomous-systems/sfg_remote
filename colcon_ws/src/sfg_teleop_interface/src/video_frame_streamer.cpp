@@ -24,10 +24,12 @@ namespace sfg_teleop_interface
         }
     }
 
-    void VideoFrameStreamerNode::RenderVideoFrame(const SDL_FRect &destination)
+    void VideoFrameStreamerNode::RenderVideoFrame(const int window_width, const int window_height)
     {
         if (m_frameTexture && m_renderer)
         {
+            // Get rect for correct positioning and scaling with respect to the window dimension
+            SDL_FRect destination = AspectFitRect(window_width, window_height);
             SDL_RenderTexture(m_renderer, m_frameTexture, nullptr, &destination);
         }
     }
@@ -51,6 +53,35 @@ namespace sfg_teleop_interface
             m_robot_name = name;
             RCLCPP_INFO(this->get_logger(), "Changed Robot name for live video to %s", name.c_str());
         }
+    }
+
+    SDL_FRect VideoFrameStreamerNode::AspectFitRect(int win_w, int win_h) const
+    {
+        SDL_FRect dst{0.f, 0.f, 0.f, 0.f};
+        if (win_w <= 0 || win_h <= 0 || m_textureWidth <= 0 || m_textureHeight <= 0)
+            return dst;
+
+        const float win_aspect = static_cast<float>(win_w) / static_cast<float>(win_h);
+        const float img_aspect = static_cast<float>(m_textureWidth) / static_cast<float>(m_textureHeight);
+
+        if (win_aspect > img_aspect)
+        {
+            // Window is wider than image -> fit by height
+            dst.h = static_cast<float>(win_h);
+            dst.w = dst.h * img_aspect;
+            dst.x = (static_cast<float>(win_w) - dst.w) * 0.5f;
+            dst.y = 0.f;
+        }
+        else
+        {
+            // Window is taller than image -> fit by width
+            dst.w = static_cast<float>(win_w);
+            dst.h = dst.w / img_aspect;
+            dst.x = 0.f;
+            dst.y = (static_cast<float>(win_h) - dst.h) * 0.5f;
+        }
+
+        return dst;
     }
 
     // subscription callback

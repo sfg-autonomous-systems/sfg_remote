@@ -73,7 +73,6 @@ install(TARGETS ${EXECUTABLE_NAME}
 # Add other files/directories.                                                                           #
 # ########################################################################################################
 install(DIRECTORY
-    "launch"
     "config"
     DESTINATION "share/${PROJECT_NAME}/"
 )

@@ -359,8 +359,8 @@ namespace sfg_teleop_interface
         SDL_GetWindowSize(this->m_window, &width, &height);
 
         // render video frame texture
-        SDL_FRect dest{0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)};
-        ((VideoFrameStreamerNode *)m_video_stream_node.get())->RenderVideoFrame(dest);
+        // SDL_FRect dest{0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)};
+        ((VideoFrameStreamerNode *)m_video_stream_node.get())->RenderVideoFrame(width, height);
 
         // render GUI elements on top of the scene
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), this->m_renderer);
