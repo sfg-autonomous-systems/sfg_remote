@@ -10,12 +10,15 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(EXECUTABLE_NAME "remote_control_station")
+
 # ########################################################################################################
 # Find dependencies.                                                                                     #
 # ########################################################################################################
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
@@ -28,8 +31,14 @@ pkg_check_modules(SDL3 REQUIRED sdl3)
 # ImGui directories
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
 set(IMGUI_BACKENDS ${IMGUI_DIR}/backends)
+set(ROS2_LIBS
+    rclcpp
+    std_msgs
+    sensor_msgs
+    geometry_msgs
+)
 
-add_executable(remote_control_station
+set(SOURCES
 
     # Imgui sources
     ${IMGUI_DIR}/imgui.cpp
@@ -40,13 +49,16 @@ add_executable(remote_control_station
     ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
 
     src/control_command_publisher.cpp
+    src/video_frame_streamer.cpp
     src/telemetry_subscriber.cpp
     src/ros_pump.cpp
     src/application.cpp
     src/main.cpp
 )
-ament_target_dependencies(remote_control_station ${SDL3_LIBRARIES} rclcpp std_msgs geometry_msgs)
-target_include_directories(remote_control_station PUBLIC
+
+add_executable(${EXECUTABLE_NAME} ${SOURCES})
+ament_target_dependencies(${EXECUTABLE_NAME} ${SDL3_LIBRARIES} ${ROS2_LIBS})
+target_include_directories(${EXECUTABLE_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include> PRIVATE
     ${IMGUI_DIR}
@@ -54,13 +66,15 @@ target_include_directories(remote_control_station PUBLIC
     ${SDL3_INCLUDE_DIRS}
 )
 
-install(TARGETS remote_control_station
+install(TARGETS ${EXECUTABLE_NAME}
     DESTINATION lib/${PROJECT_NAME})
 
 # ########################################################################################################
 # Add other files/directories.                                                                           #
 # ########################################################################################################
 install(DIRECTORY
+    "launch"
+    "config"
     DESTINATION "share/${PROJECT_NAME}/"
 )
 
