@@ -12,9 +12,13 @@ namespace sfg_teleop_interface
         // create and register nodes
         this->m_control_node = std::make_shared<ControlCommandPublisher>();
         this->m_ros.Add_Node(m_control_node);
+        this->m_video_stream_node = std::make_shared<VideoFrameStreamerNode>();
+        this->m_ros.Add_Node(m_video_stream_node);
 
         ((ControlCommandPublisher *)m_control_node.get())->ChangeRobotName(robot_name);
         ((ControlCommandPublisher *)m_control_node.get())->Arm();
+
+        ((VideoFrameStreamerNode *)m_video_stream_node.get())->ChangeRobotName(robot_name);
     }
 
     Application::~Application()
@@ -230,6 +234,7 @@ namespace sfg_teleop_interface
         // setup renderer backend
         ImGui_ImplSDL3_InitForSDLRenderer(this->m_window, this->m_renderer);
         ImGui_ImplSDLRenderer3_Init(this->m_renderer);
+        ((VideoFrameStreamerNode *)m_video_stream_node.get())->PassRendererHandle(this->m_renderer);
 
         SDL_Log("Video Driver: %s \n", SDL_GetCurrentVideoDriver());
         SDL_HideWindow(this->m_window);
@@ -352,6 +357,10 @@ namespace sfg_teleop_interface
         // render directly with SDL
         int width, height = 0;
         SDL_GetWindowSize(this->m_window, &width, &height);
+
+        // render video frame texture
+        SDL_FRect dest{0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)};
+        ((VideoFrameStreamerNode *)m_video_stream_node.get())->RenderVideoFrame(dest);
 
         // render GUI elements on top of the scene
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), this->m_renderer);

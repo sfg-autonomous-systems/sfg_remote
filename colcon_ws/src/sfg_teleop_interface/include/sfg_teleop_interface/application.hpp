@@ -15,6 +15,7 @@
 #include "sfg_teleop_interface/types.hpp"
 #include "sfg_teleop_interface/ros_pump.hpp"
 #include "sfg_teleop_interface/control_command_publisher.hpp"
+#include "sfg_teleop_interface/video_frame_streamer.hpp"
 
 // compile options
 // #define _USE_FULLSCREEN
@@ -22,8 +23,8 @@
 
 namespace sfg_teleop_interface
 {
-    const int window_width = 1280;
-    const int window_height = 720;
+    const int window_width = 1920;
+    const int window_height = 1080;
     const uint32_t min_frame_time_ms = 15;
     const std::string robot_name = "sfg_tb4_02";
 
@@ -72,5 +73,6 @@ namespace sfg_teleop_interface
 
         RosPump m_ros;
         ControlCommandPublisher::SharedPtr m_control_node;
+        VideoFrameStreamerNode::SharedPtr m_video_stream_node;
     };
 }
