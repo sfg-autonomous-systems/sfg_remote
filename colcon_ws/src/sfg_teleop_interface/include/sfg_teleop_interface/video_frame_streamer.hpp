@@ -55,7 +55,6 @@ namespace sfg_teleop_interface
         // Getter & Setter
         void ChangeRobotName(const std::string &name);
         void PassRendererHandle(SDL_Renderer *renderer);
-        // SDL_Texture *GetVideoTexture() const;
 
     private:
         void OnImageReceived(const sensor_msgs::msg::Image::ConstSharedPtr &msg);

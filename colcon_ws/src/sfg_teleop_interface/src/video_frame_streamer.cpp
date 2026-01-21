@@ -9,7 +9,7 @@ namespace sfg_teleop_interface
         // create subscription for given robot name
         auto qos = rclcpp::SensorDataQoS();
         m_image_sub = this->create_subscription<sensor_msgs::msg::Image>(
-            "/local/" + m_robot_name + "/camera_back/color/image_raw",
+            "/local/" + m_robot_name + "/camera_head/color/image_raw",
             qos,
             std::bind(&VideoFrameStreamerNode::OnImageReceived, this, _1));
     }
@@ -44,7 +44,7 @@ namespace sfg_teleop_interface
         {
             auto qos = rclcpp::SensorDataQoS();
             m_image_sub = this->create_subscription<sensor_msgs::msg::Image>(
-                "/local/" + name + "/camera_back/color/image_raw",
+                "/local/" + name + "/camera_head/color/image_raw",
                 qos,
                 std::bind(&VideoFrameStreamerNode::OnImageReceived, this, _1));
 
@@ -52,13 +52,6 @@ namespace sfg_teleop_interface
             RCLCPP_INFO(this->get_logger(), "Changed Robot name for live video to %s", name.c_str());
         }
     }
-
-    /*
-    SDL_Texture *VideoFrameStreamerNode::GetVideoTexture() const
-    {
-        return this->m_frameTexture;
-    }
-    */
 
     // subscription callback
     void VideoFrameStreamerNode::OnImageReceived(const sensor_msgs::msg::Image::ConstSharedPtr &msg)
@@ -103,7 +96,7 @@ namespace sfg_teleop_interface
             m_textureHeight = image_height;
             m_pixelFormat = fmt;
 
-            RCLCPP_INFO(this->get_logger(), "Recreated video texture");
+            RCLCPP_INFO(this->get_logger(), "Recreated video texture: %dx%d %s", image_width, image_height, msg->encoding.c_str());
         }
 
         // Upload image into texture for subsequent rendering

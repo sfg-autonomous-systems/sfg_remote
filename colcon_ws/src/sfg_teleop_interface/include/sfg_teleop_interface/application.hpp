@@ -26,7 +26,7 @@ namespace sfg_teleop_interface
     const int window_width = 1920;
     const int window_height = 1080;
     const uint32_t min_frame_time_ms = 15;
-    const std::string robot_name = "sfg_tb4_02";
+    const std::string robot_name = "sfg_go2_01";
 
     struct JoystickIdDel
     {
