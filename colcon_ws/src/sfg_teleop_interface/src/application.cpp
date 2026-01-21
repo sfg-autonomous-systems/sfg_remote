@@ -141,7 +141,7 @@ namespace sfg_teleop_interface
 
         // then create window and renderer
         SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_KEYBOARD_GRABBED;
-        if (!SDL_CreateWindowAndRenderer("Robot Control Center Prototype",
+        if (!SDL_CreateWindowAndRenderer("Remote Control Station",
                                          fullscreenMode->w, fullscreenMode->h,
                                          window_flags,
                                          &this->m_window,
@@ -167,7 +167,7 @@ namespace sfg_teleop_interface
 #else
         // create window and renderer
         SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_KEYBOARD_GRABBED;
-        if (!SDL_CreateWindowAndRenderer("Teleoperation Center Prototype",
+        if (!SDL_CreateWindowAndRenderer("Remote Control Station",
                                          window_width, window_height,
                                          window_flags,
                                          &this->m_window,
