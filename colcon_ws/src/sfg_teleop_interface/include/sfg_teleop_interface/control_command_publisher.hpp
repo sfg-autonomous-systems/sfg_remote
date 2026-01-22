@@ -19,6 +19,6 @@ namespace sfg_teleop_interface
 
     private:
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr m_pub_control;
-        bool m_isArmed = false;
+        bool m_isArmed = true;
     };
 }

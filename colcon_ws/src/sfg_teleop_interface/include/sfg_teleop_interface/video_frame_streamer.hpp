@@ -65,6 +65,7 @@ namespace sfg_teleop_interface
         SDL_Renderer *m_renderer = nullptr;
         mutable std::mutex m_textureMutex;
         SDL_Texture *m_frameTexture = nullptr;
+        // SDL_TexturePtr m_frameTexture;
         SDL_PixelFormat m_pixelFormat = SDL_PIXELFORMAT_UNKNOWN;
         int m_textureWidth, m_textureHeight = 0;
 

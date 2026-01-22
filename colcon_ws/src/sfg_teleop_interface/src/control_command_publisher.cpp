@@ -2,7 +2,7 @@
 
 namespace sfg_teleop_interface
 {
-    const double max_linear_velocity = 3.0;  // in m/s
+    const double max_linear_velocity = 2.8;  // in m/s
     const double max_angular_velocity = 1.5; // in rad/s
     const double max_stick_val_abs = 32767;
 
@@ -57,7 +57,7 @@ namespace sfg_teleop_interface
         // construct twist message and publish
         geometry_msgs::msg::TwistStamped t_cmd;
         t_cmd.twist.linear.x = -left_stick_y * max_linear_velocity; // moving back and forth
-        t_cmd.twist.linear.y = left_stick_x * max_linear_velocity;  // moving sideways
+        t_cmd.twist.linear.y = -left_stick_x * max_linear_velocity; // moving sideways
         // t_cmd.twist.linear.y = 0.0;
         t_cmd.twist.linear.z = 0.0; // moving up and down
 
@@ -68,6 +68,7 @@ namespace sfg_teleop_interface
         // t_cmd.twist.angular.z = 0.0;
         t_cmd.header.stamp = now();
         this->m_pub_control->publish(t_cmd);
+
         // std::cout << "Published control command. \n";
     }
 
