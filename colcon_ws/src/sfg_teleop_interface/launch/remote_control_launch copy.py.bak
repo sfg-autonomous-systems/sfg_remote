@@ -1,0 +1,35 @@
+from launch import LaunchDescription
+from launch.substitutions import PathJoinSubstitution
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
+from rospkg import get_package_name
+from sfg_utils.fqn import RosFqnBuilder, RosFqnSegment, Scope
+
+package_name = get_package_name(__file__)
+local_namespace = RosFqnBuilder().scope(Scope.Local).agent()
+global_namespace = RosFqnBuilder().scope(Scope.Global).agent()
+
+
+def generate_launch_description() -> LaunchDescription:
+    remote_controller_node = Node(
+        package=package_name,
+        executable="remote_control_station",
+        namespace=local_namespace.build(RosFqnSegment.Scope, RosFqnSegment.Agent),
+        name="remote_control_station",
+        output="screen",
+        parameters=[
+            PathJoinSubstitution(
+                [
+                    FindPackageShare(package_name),
+                    "config",
+                    "params.yaml",
+                ]
+            ),
+        ],
+    )
+
+    return LaunchDescription(
+        [
+            remote_controller_node,
+        ]
+    )
