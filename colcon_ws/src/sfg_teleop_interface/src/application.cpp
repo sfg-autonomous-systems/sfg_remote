@@ -77,15 +77,23 @@ namespace sfg_teleop_interface
 
     void Application::Run()
     {
+        static int64_t last_cmd_send = 0;
+
         this->m_running = true;
 
         while (this->m_running)
         {
             this->Update();
 
+            auto current_time = now_ms();
+            if (current_time - last_cmd_send > min_cmd_period)
+            {
+                ((ControlCommandPublisher *)m_control_node.get())->PublishMoveCommand(m_left_stick.x_axis_val, m_left_stick.y_axis_val, m_right_stick.x_axis_val, m_right_stick.y_axis_val);
+                last_cmd_send = current_time;
+            }
+
             // peform ROS2 related I/O
-            ((ControlCommandPublisher *)m_control_node.get())->PublishMoveCommand(m_left_stick.x_axis_val, m_left_stick.y_axis_val, m_right_stick.x_axis_val, m_right_stick.y_axis_val);
-            this->m_ros.Poll(std::chrono::microseconds(500));
+            this->m_ros.Poll(microseconds(500));
 
             this->Render();
 
@@ -238,6 +246,9 @@ namespace sfg_teleop_interface
 
         SDL_Log("Video Driver: %s \n", SDL_GetCurrentVideoDriver());
         SDL_HideWindow(this->m_window);
+
+        // don't create a imgui.ini files every launch
+        io.IniFilename = nullptr;
 
         return true;
     }
