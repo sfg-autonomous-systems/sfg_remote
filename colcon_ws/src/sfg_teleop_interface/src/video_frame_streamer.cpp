@@ -4,7 +4,7 @@ namespace sfg_teleop_interface
 {
     VideoFrameStreamerNode::VideoFrameStreamerNode()
         : Node("video_frame_streamer_node"),
-          m_robot_name("fwgfwa")
+          m_robot_name("sfg_go2_01")
     {
         // create subscription for given robot name
         auto qos = rclcpp::SensorDataQoS();
