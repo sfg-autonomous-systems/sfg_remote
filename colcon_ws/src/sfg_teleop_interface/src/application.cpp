@@ -12,7 +12,7 @@ namespace sfg_teleop_interface
         // create and register teleop node
         this->m_teleop_client_node = std::make_shared<TeleopClient>();
         this->m_ros.Add_Node(m_teleop_client_node);
-        ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(robot_name);
+        ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot("");
     }
 
     Application::~Application()

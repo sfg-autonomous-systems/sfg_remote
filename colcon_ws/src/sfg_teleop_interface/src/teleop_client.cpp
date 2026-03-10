@@ -64,6 +64,11 @@ namespace sfg_teleop_interface
         }
     }
 
+    std::vector<std::string> TeleopClient::GetRobotAgentList() const
+    {
+        return this->m_discovered_robot_names;
+    }
+
     void TeleopClient::CreatePublisherAndSubscriber()
     {
         using namespace sfg_utils::fqn;
