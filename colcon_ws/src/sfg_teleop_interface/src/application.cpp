@@ -12,7 +12,7 @@ namespace sfg_teleop_interface
         // create and register teleop node
         this->m_teleop_client_node = std::make_shared<TeleopClient>();
         this->m_ros.Add_Node(m_teleop_client_node);
-        ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot("");
+        ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(robot_name);
     }
 
     Application::~Application()
@@ -347,7 +347,7 @@ namespace sfg_teleop_interface
         ImGui::Text("Right Stick:  X = %d | Y = %d", this->m_right_stick.x_axis_val, this->m_right_stick.y_axis_val);
         // ImGui::Text("Video fps: %.1f", this->m_video_decoder.GetVideoFPS());
 
-        if (this - m_appState.show_robot_selector_dialog)
+        if (this->m_appState.show_robot_selector_dialog)
         {
             this->DrawSelectorDialog();
         }
