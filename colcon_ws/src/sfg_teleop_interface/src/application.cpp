@@ -13,19 +13,6 @@ namespace sfg_teleop_interface
         this->m_teleop_client_node = std::make_shared<TeleopClient>();
         this->m_ros.Add_Node(m_teleop_client_node);
         ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(robot_name);
-
-        // legacy
-        /*
-        this->m_control_node = std::make_shared<ControlCommandPublisher>();
-        this->m_ros.Add_Node(m_control_node);
-        this->m_video_stream_node = std::make_shared<VideoFrameStreamerNode>();
-        this->m_ros.Add_Node(m_video_stream_node);
-
-        ((ControlCommandPublisher *)m_control_node.get())->ChangeRobotName(robot_name);
-        ((ControlCommandPublisher *)m_control_node.get())->Arm();
-
-        ((VideoFrameStreamerNode *)m_video_stream_node.get())->ChangeRobotName(robot_name);
-        */
     }
 
     Application::~Application()
