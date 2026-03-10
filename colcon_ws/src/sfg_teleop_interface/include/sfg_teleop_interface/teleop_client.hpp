@@ -2,11 +2,15 @@
 
 #include <iostream>
 #include <string>
-#include <memory>
+#include <cmath>
 #include <mutex>
+#include <memory>
+#include <vector>
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
+#include "sfg_agent_msgs/srv/get_discovered_agents.hpp"
 #include <SDL3/SDL.h>
 
 namespace sfg_teleop_interface
@@ -14,7 +18,7 @@ namespace sfg_teleop_interface
     using std::placeholders::_1;
 
     // helper function
-    static bool encoding_to_sdl_format(const std::string &enc, SDL_PixelFormat &out_fmt, int &out_bpp)
+    static bool ENCODING_TO_SDL_FORMAT(const std::string &enc, SDL_PixelFormat &out_fmt, int &out_bpp)
     {
         if (enc == "rgb8")
         {
@@ -44,33 +48,42 @@ namespace sfg_teleop_interface
         return false;
     }
 
-    class VideoFrameStreamerNode : public rclcpp::Node
+    class TeleopClient : public rclcpp::Node
     {
     public:
-        explicit VideoFrameStreamerNode();
-        ~VideoFrameStreamerNode() override;
+        explicit TeleopClient();
+        ~TeleopClient() override;
+        void SwitchToRobot(const std::string &name);
 
+        // Control related
+        void PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);
+        void Arm();
+        void Disarm();
+
+        // Video and telemetry related
         void RenderVideoFrame(const int window_width, const int window_height);
-
-        // Getter & Setter
-        void ChangeRobotName(const std::string &name);
         void PassRendererHandle(SDL_Renderer *renderer);
 
     private:
+        void CreatePublisherAndSubscriber();
+        void DiscoverAgents();
         void OnImageReceived(const sensor_msgs::msg::Image::ConstSharedPtr &msg);
         SDL_FRect AspectFitRect(int win_w, int win_h) const;
 
     private:
-        // Renderer and Texture state
         SDL_Renderer *m_renderer = nullptr;
-        mutable std::mutex m_textureMutex;
         SDL_Texture *m_frameTexture = nullptr;
-        // SDL_TexturePtr m_frameTexture;
         SDL_PixelFormat m_pixelFormat = SDL_PIXELFORMAT_UNKNOWN;
+        mutable std::mutex m_textureMutex;
         int m_textureWidth, m_textureHeight = 0;
 
         // ROS related
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_sub;
+        rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr m_control_pub;
+        rclcpp::Client<sfg_agent_msgs::srv::GetDiscoveredAgents>::SharedPtr m_discovery_service;
+
+        std::vector<std::string> m_discovered_robot_names;
         std::string m_robot_name;
+        bool m_isArmed;
     };
 }

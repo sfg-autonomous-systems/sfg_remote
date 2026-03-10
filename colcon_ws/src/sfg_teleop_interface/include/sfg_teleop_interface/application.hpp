@@ -14,8 +14,7 @@
 
 #include "sfg_teleop_interface/types.hpp"
 #include "sfg_teleop_interface/ros_pump.hpp"
-#include "sfg_teleop_interface/control_command_publisher.hpp"
-#include "sfg_teleop_interface/video_frame_streamer.hpp"
+#include "sfg_teleop_interface/teleop_client.hpp"
 
 // compile options
 #define _USE_FULLSCREEN
@@ -86,7 +85,6 @@ namespace sfg_teleop_interface
         bool m_running = false;
 
         RosPump m_ros;
-        ControlCommandPublisher::SharedPtr m_control_node;
-        VideoFrameStreamerNode::SharedPtr m_video_stream_node;
+        TeleopClient::SharedPtr m_teleop_client_node;
     };
 }

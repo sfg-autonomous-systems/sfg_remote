@@ -36,6 +36,8 @@ set(ROS2_LIBS
     std_msgs
     sensor_msgs
     geometry_msgs
+    sfg_utils
+    sfg_agent_msgs
 )
 
 set(SOURCES
@@ -48,9 +50,7 @@ set(SOURCES
     ${IMGUI_BACKENDS}/imgui_impl_sdl3.cpp
     ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
 
-    src/control_command_publisher.cpp
-    src/video_frame_streamer.cpp
-    src/telemetry_subscriber.cpp
+    src/teleop_client.cpp
     src/ros_pump.cpp
     src/application.cpp
     src/main.cpp

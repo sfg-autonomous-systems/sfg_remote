@@ -9,7 +9,13 @@ namespace sfg_teleop_interface
         this->m_renderer = nullptr;
         this->m_gamepad = nullptr;
 
-        // create and register nodes
+        // create and register teleop node
+        this->m_teleop_client_node = std::make_shared<TeleopClient>();
+        this->m_ros.Add_Node(m_teleop_client_node);
+        ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(robot_name);
+
+        // legacy
+        /*
         this->m_control_node = std::make_shared<ControlCommandPublisher>();
         this->m_ros.Add_Node(m_control_node);
         this->m_video_stream_node = std::make_shared<VideoFrameStreamerNode>();
@@ -19,6 +25,7 @@ namespace sfg_teleop_interface
         ((ControlCommandPublisher *)m_control_node.get())->Arm();
 
         ((VideoFrameStreamerNode *)m_video_stream_node.get())->ChangeRobotName(robot_name);
+        */
     }
 
     Application::~Application()
@@ -88,7 +95,7 @@ namespace sfg_teleop_interface
             auto current_time = now_ms();
             if (current_time - last_cmd_send > min_cmd_period)
             {
-                ((ControlCommandPublisher *)m_control_node.get())->PublishMoveCommand(m_left_stick.x_axis_val, m_left_stick.y_axis_val, m_right_stick.x_axis_val, m_right_stick.y_axis_val);
+                ((TeleopClient *)m_teleop_client_node.get())->PublishMoveCommand(m_left_stick.x_axis_val, m_left_stick.y_axis_val, m_right_stick.x_axis_val, m_right_stick.y_axis_val);
                 last_cmd_send = current_time;
             }
 
@@ -242,7 +249,7 @@ namespace sfg_teleop_interface
         // setup renderer backend
         ImGui_ImplSDL3_InitForSDLRenderer(this->m_window, this->m_renderer);
         ImGui_ImplSDLRenderer3_Init(this->m_renderer);
-        ((VideoFrameStreamerNode *)m_video_stream_node.get())->PassRendererHandle(this->m_renderer);
+        ((TeleopClient *)m_teleop_client_node.get())->PassRendererHandle(this->m_renderer);
 
         SDL_Log("Video Driver: %s \n", SDL_GetCurrentVideoDriver());
         SDL_HideWindow(this->m_window);
@@ -371,7 +378,7 @@ namespace sfg_teleop_interface
 
         // render video frame texture
         // SDL_FRect dest{0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)};
-        ((VideoFrameStreamerNode *)m_video_stream_node.get())->RenderVideoFrame(width, height);
+        ((TeleopClient *)m_teleop_client_node.get())->RenderVideoFrame(width, height);
 
         // render GUI elements on top of the scene
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), this->m_renderer);
