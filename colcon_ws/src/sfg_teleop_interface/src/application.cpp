@@ -73,9 +73,9 @@ namespace sfg_teleop_interface
     {
         static int64_t last_cmd_send = 0;
 
-        this->m_running = true;
+        this->m_appState.running = true;
 
-        while (this->m_running)
+        while (this->m_appState.running)
         {
             this->Update();
 
@@ -302,14 +302,19 @@ namespace sfg_teleop_interface
                 event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED ||
                 event.type == SDL_EVENT_GAMEPAD_REMOVED)
             {
-                this->m_running = false;
+                this->m_appState.running = false;
             }
         }
 
         // Do state based input processing
         if (SDL_GetGamepadButton(this->m_gamepad, SDL_GAMEPAD_BUTTON_EAST))
         {
-            m_running = false;
+            this->m_appState.running = false;
+        }
+
+        if (SDL_GetGamepadButton(this->m_gamepad, SDL_GAMEPAD_BUTTON_WEST))
+        {
+            this->m_appState.show_robot_selector_dialog = true;
         }
 
         // sample stick positions
@@ -342,11 +347,34 @@ namespace sfg_teleop_interface
         ImGui::Text("Right Stick:  X = %d | Y = %d", this->m_right_stick.x_axis_val, this->m_right_stick.y_axis_val);
         // ImGui::Text("Video fps: %.1f", this->m_video_decoder.GetVideoFPS());
 
+        if (this - m_appState.show_robot_selector_dialog)
+        {
+            this->DrawSelectorDialog();
+        }
+
         // render Gui elements code goes here
         // ...
 
         ImGui::End();
         ImGui::Render();
+    }
+
+    void Application::DrawSelectorDialog()
+    {
+        ImGui::BeginPopupModal("", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+        ImGui::Separator();
+
+        for (const std::string &option : ((TeleopClient *)m_teleop_client_node.get())->GetRobotAgentList())
+        {
+            if (ImGui::Button(option.c_str(), ImVec2(250.0f, 0.0f)))
+            {
+                ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(option);
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::EndPopup();
     }
 
     void Application::Render()

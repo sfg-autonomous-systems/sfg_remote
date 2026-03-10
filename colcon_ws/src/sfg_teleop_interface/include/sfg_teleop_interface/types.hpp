@@ -8,4 +8,10 @@ namespace sfg_teleop_interface
         int y_axis_val = 0;
         bool pressed = false;
     };
+
+    struct AppState
+    {
+        bool running = true;
+        bool show_robot_selector_dialog = false;
+    };
 }

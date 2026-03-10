@@ -70,6 +70,7 @@ namespace sfg_teleop_interface
 
         void Update();
         void Draw();
+        void DrawSelectorDialog();
         void Render();
 
     private:
@@ -81,8 +82,9 @@ namespace sfg_teleop_interface
         AnalogStickState m_left_stick = {};
         AnalogStickState m_right_stick = {};
 
+        AppState m_appState;
+
         float m_framerate = 0.0f;
-        bool m_running = false;
 
         RosPump m_ros;
         TeleopClient::SharedPtr m_teleop_client_node;
