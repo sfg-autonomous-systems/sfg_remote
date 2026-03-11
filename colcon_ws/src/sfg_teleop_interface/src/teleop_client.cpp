@@ -55,25 +55,40 @@ namespace sfg_teleop_interface
     void TeleopClient::SwitchToRobot(const std::string &name)
     {
         // when name actually changed, recreate subscription with to matching topic
-        if (name != m_robot_name)
+        if (name == m_robot_name)
         {
-            // ...
-            auto iterator = this->m_agent_metadata.find(name);
-            if (iterator == this->m_agent_metadata.end())
-            {
-                return;
-            }
-
-            const auto &selected_agent = iterator->second;
-
-            // print some metadata for selected robot
-            RCLCPP_INFO(get_logger(), "Metadata for robot %s:", selected_agent.agent_name.c_str());
-            RCLCPP_INFO(get_logger(), "  primary camera: %s", selected_agent.cameras.at(0).c_str());
-            RCLCPP_INFO(get_logger(), "  primary lidar:  %s", selected_agent.lidars.at(0).c_str());
-
-            m_robot_name = name;
-            this->CreatePublisherAndSubscriber();
+            return;
         }
+
+        // ...
+        auto iterator = this->m_agent_metadata.find(name);
+        if (iterator == this->m_agent_metadata.end())
+        {
+            return;
+        }
+
+        const auto &selected_agent = iterator->second;
+
+        // print some metadata for selected robot
+        RCLCPP_INFO(get_logger(), "Metadata for robot %s:", selected_agent.agent_name.c_str());
+        RCLCPP_INFO(get_logger(), "  primary camera: %s", selected_agent.cameras.at(0).c_str());
+        RCLCPP_INFO(get_logger(), "  primary lidar:  %s", selected_agent.lidars.at(0).c_str());
+
+        // disarm before switching to another
+        if (this->m_isArmed)
+        {
+            this->Disarm();
+        }
+
+        // now switch over
+        m_robot_name = name;
+        this->CreatePublisherAndSubscriber();
+
+        // recreate the trigger-action service client and arm the newly selected robot
+        using namespace sfg_utils::fqn;
+        // --> ros2 service call /global/sfg_go2_01/locomotion_controller/trigger_action sfg_agent_msgs/srv/TriggerAction "{action: 'disarm'}"
+        this->m_trigger_action_service = create_client<sfg_agent_msgs::srv::TriggerAction>(RosFqnBuilder().scope(Scope::Global).component(Component::LocomotionController).agent(m_robot_name).resource(Resource::TriggerAction).build());
+        this->Arm();
     }
 
     const std::map<std::string, sfg_agent_msgs::msg::Metadata> &TeleopClient::GetRobotAgentMetadata() const
@@ -165,18 +180,62 @@ namespace sfg_teleop_interface
 
     void TeleopClient::Arm()
     {
-        // request arm service
-        // ...
+        // create request for arm service
+        auto request = std::make_shared<sfg_agent_msgs::srv::TriggerAction::Request>();
+        request->action = "arm";
 
-        this->m_isArmed = true;
+        // request arm service
+        auto future = m_trigger_action_service->async_send_request(
+            request,
+            [this](rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedFuture future)
+            {
+                future.wait();
+
+                if (future.valid())
+                {
+                    auto payload = future.get();
+                    auto res = payload->result;
+                    if (res == sfg_agent_msgs::srv::TriggerAction_Response::FAILURE)
+                    {
+                        RCLCPP_ERROR(get_logger(), "Arming failed!");
+                    }
+                    if (res == sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS)
+                    {
+                        RCLCPP_INFO(get_logger(), "Arming successful");
+                        this->m_isArmed = true;
+                    }
+                }
+            });
     }
 
     void TeleopClient::Disarm()
     {
-        // request disarm service
-        // ...
+        // create request for arm service
+        auto request = std::make_shared<sfg_agent_msgs::srv::TriggerAction::Request>();
+        request->action = "disarm";
 
-        this->m_isArmed = false;
+        // request arm service
+        auto future = m_trigger_action_service->async_send_request(
+            request,
+            [this](rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedFuture future)
+            {
+                future.wait();
+
+                if (future.valid())
+                {
+                    auto payload = future.get();
+                    auto res = payload->result;
+                    if (res == sfg_agent_msgs::srv::TriggerAction_Response::FAILURE)
+                    {
+                        RCLCPP_ERROR(get_logger(), "Disarming failed!");
+                    }
+                    if (res == sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS)
+                    {
+                        RCLCPP_INFO(get_logger(), "Disarming successful");
+                        this->m_isArmed = false;
+                    }
+                }
+            });
     }
 
     void TeleopClient::RenderVideoFrame(const int window_width, const int window_height)
