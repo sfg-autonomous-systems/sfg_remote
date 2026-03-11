@@ -33,9 +33,6 @@ namespace sfg_teleop_interface
     const uint32_t min_frame_time_ms = 15;
     const int64_t min_cmd_period = 25;
 
-    const std::string robot_name = "sfg_go2_01";
-    // const std::string robot_name = "sfg_tb4_02";
-
     static std::int64_t now_ms()
     {
         return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();

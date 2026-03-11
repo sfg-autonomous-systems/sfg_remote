@@ -383,10 +383,11 @@ namespace sfg_teleop_interface
 
             if (ImGui::Button("Dummy", ImVec2(250, 0)))
             {
+                ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot("Dummy");
             }
 
             ImGui::Separator();
-            if (ImGui::Button("Close", ImVec2(100, 0)))
+            if (ImGui::Button("Cancel", ImVec2(100, 0)))
             {
                 ImGui::CloseCurrentPopup();
             }
