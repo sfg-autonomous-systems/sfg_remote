@@ -204,21 +204,21 @@ namespace sfg_teleop_interface
                     auto res = payload->result;
                     switch (res)
                     {
-                    case sfg_agent_msgs::srv::TriggerAction::Response::FAILURE:
+                    case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
                     {
                         RCLCPP_ERROR(get_logger(), "Arming failed!");
                         this->m_isArmed = false;
                         break;
                     }
 
-                    case sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS:
+                    case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
                     {
                         RCLCPP_INFO(get_logger(), "Arming successful.");
                         this->m_isArmed = true;
                         break;
                     }
 
-                    case sfg_agent_msgs::srv::TriggerAction::Response::UNSUPPORTED:
+                    case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
                     {
                         RCLCPP_INFO(get_logger(), "Arming not implemented (ignored).");
                         this->m_isArmed = true;
@@ -252,7 +252,7 @@ namespace sfg_teleop_interface
             [this](rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedFuture future)
             {
                 future.wait();
-                RCLCPP_INFO(get_logger(), "Completed disarm service request");
+                // RCLCPP_INFO(this->get_logger(), "Completed disarm service request");
 
                 if (future.valid())
                 {
@@ -260,20 +260,20 @@ namespace sfg_teleop_interface
                     auto res = payload->result;
                     switch (res)
                     {
-                    case sfg_agent_msgs::srv::TriggerAction::Response::FAILURE:
+                    case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
                     {
                         RCLCPP_ERROR(get_logger(), "Disarming failed!");
                         break;
                     }
 
-                    case sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS:
+                    case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
                     {
                         RCLCPP_INFO(get_logger(), "Disarming successful.");
                         this->m_isArmed = false;
                         break;
                     }
 
-                    case sfg_agent_msgs::srv::TriggerAction::Response::UNSUPPORTED:
+                    case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
                     {
                         RCLCPP_INFO(get_logger(), "Disarming not implemented (ignored).");
                         this->m_isArmed = true;

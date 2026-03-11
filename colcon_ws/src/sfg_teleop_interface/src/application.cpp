@@ -319,7 +319,15 @@ namespace sfg_teleop_interface
         }
 
         // manual dis/arming
-        // ...
+        if (SDL_GetGamepadButton(this->m_gamepad, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER))
+        {
+            ((TeleopClient *)m_teleop_client_node.get())->Arm();
+        }
+
+        if (SDL_GetGamepadButton(this->m_gamepad, SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER))
+        {
+            ((TeleopClient *)m_teleop_client_node.get())->Disarm();
+        }
 
         // sample stick positions
         this->m_left_stick.x_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX);
