@@ -56,7 +56,7 @@ namespace sfg_teleop_interface
         explicit TeleopClient();
         ~TeleopClient() override;
         void SwitchToRobot(const std::string &name);
-        const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetRobotAgentMetadata() const;
+        const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetAllRobotAgentMetadata() const;
 
         // Control related
         void PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);

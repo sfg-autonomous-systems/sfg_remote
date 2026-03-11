@@ -91,7 +91,7 @@ namespace sfg_teleop_interface
         this->Arm();
     }
 
-    const std::map<std::string, sfg_agent_msgs::msg::Metadata> &TeleopClient::GetRobotAgentMetadata() const
+    const std::map<std::string, sfg_agent_msgs::msg::Metadata> &TeleopClient::GetAllRobotAgentMetadata() const
     {
         return this->m_agent_metadata;
     }

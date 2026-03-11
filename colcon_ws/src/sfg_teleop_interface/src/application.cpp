@@ -384,7 +384,7 @@ namespace sfg_teleop_interface
             ImGui::TextUnformatted("Select a robot");
             ImGui::Separator();
 
-            for (const auto &[agent_name, metadata] : ((TeleopClient *)m_teleop_client_node.get())->GetRobotAgentMetadata())
+            for (const auto &[agent_name, metadata] : ((TeleopClient *)m_teleop_client_node.get())->GetAllRobotAgentMetadata())
             {
                 if (ImGui::Button(agent_name.c_str(), ImVec2(250.0f, 0.0f)))
                 {
