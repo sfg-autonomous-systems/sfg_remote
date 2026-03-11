@@ -309,6 +309,7 @@ namespace sfg_teleop_interface
         // Do state based input processing
         if (SDL_GetGamepadButton(this->m_gamepad, SDL_GAMEPAD_BUTTON_EAST))
         {
+            ((TeleopClient *)m_teleop_client_node.get())->Disarm();
             this->m_appState.running = false;
         }
 
@@ -316,6 +317,9 @@ namespace sfg_teleop_interface
         {
             this->m_appState.show_robot_selector_dialog = true;
         }
+
+        // manual dis/arming
+        // ...
 
         // sample stick positions
         this->m_left_stick.x_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX);

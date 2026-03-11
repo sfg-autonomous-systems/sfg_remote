@@ -8,7 +8,7 @@ namespace sfg_teleop_interface
     const double max_angular_velocity = 1.5; // in rad/s
     const double max_stick_val_abs = 32767;
 
-    TeleopClient::TeleopClient() : Node("teleop_client"), m_robot_name("robot_01"), m_isArmed(false)
+    TeleopClient::TeleopClient() : Node("teleop_client"), m_robot_name(""), m_isArmed(false)
     {
         using namespace sfg_utils::fqn;
 
@@ -124,7 +124,9 @@ namespace sfg_teleop_interface
     {
         // skip if robot is disarmed
         if (!this->m_isArmed)
+        {
             return;
+        }
 
         // linear mapping of stick positions onto target velocities (max stick position eql. to max velocity) //
 
@@ -180,6 +182,11 @@ namespace sfg_teleop_interface
 
     void TeleopClient::Arm()
     {
+        if (m_robot_name == "")
+        {
+            return;
+        }
+
         // create request for arm service
         auto request = std::make_shared<sfg_agent_msgs::srv::TriggerAction::Request>();
         request->action = "arm";
@@ -195,14 +202,34 @@ namespace sfg_teleop_interface
                 {
                     auto payload = future.get();
                     auto res = payload->result;
-                    if (res == sfg_agent_msgs::srv::TriggerAction_Response::FAILURE)
+                    switch (res)
+                    {
+                    case sfg_agent_msgs::srv::TriggerAction::Response::FAILURE:
                     {
                         RCLCPP_ERROR(get_logger(), "Arming failed!");
+                        this->m_isArmed = false;
+                        break;
                     }
-                    if (res == sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS)
+
+                    case sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS:
                     {
-                        RCLCPP_INFO(get_logger(), "Arming successful");
+                        RCLCPP_INFO(get_logger(), "Arming successful.");
                         this->m_isArmed = true;
+                        break;
+                    }
+
+                    case sfg_agent_msgs::srv::TriggerAction::Response::UNSUPPORTED:
+                    {
+                        RCLCPP_INFO(get_logger(), "Arming not implemented (ignored).");
+                        this->m_isArmed = true;
+                        break;
+                    }
+
+                    default:
+                    {
+                        RCLCPP_WARN(get_logger(), "Arming response status unknown. Status Code = %d", res);
+                        break;
+                    }
                     }
                 }
             });
@@ -210,6 +237,11 @@ namespace sfg_teleop_interface
 
     void TeleopClient::Disarm()
     {
+        if (m_robot_name == "")
+        {
+            return;
+        }
+
         // create request for arm service
         auto request = std::make_shared<sfg_agent_msgs::srv::TriggerAction::Request>();
         request->action = "disarm";
@@ -220,19 +252,39 @@ namespace sfg_teleop_interface
             [this](rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedFuture future)
             {
                 future.wait();
+                RCLCPP_INFO(get_logger(), "Completed disarm service request");
 
                 if (future.valid())
                 {
                     auto payload = future.get();
                     auto res = payload->result;
-                    if (res == sfg_agent_msgs::srv::TriggerAction_Response::FAILURE)
+                    switch (res)
+                    {
+                    case sfg_agent_msgs::srv::TriggerAction::Response::FAILURE:
                     {
                         RCLCPP_ERROR(get_logger(), "Disarming failed!");
+                        break;
                     }
-                    if (res == sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS)
+
+                    case sfg_agent_msgs::srv::TriggerAction::Response::SUCCESS:
                     {
-                        RCLCPP_INFO(get_logger(), "Disarming successful");
+                        RCLCPP_INFO(get_logger(), "Disarming successful.");
                         this->m_isArmed = false;
+                        break;
+                    }
+
+                    case sfg_agent_msgs::srv::TriggerAction::Response::UNSUPPORTED:
+                    {
+                        RCLCPP_INFO(get_logger(), "Disarming not implemented (ignored).");
+                        this->m_isArmed = true;
+                        break;
+                    }
+
+                    default:
+                    {
+                        RCLCPP_WARN(get_logger(), "Disarming response status unknown. Status Code = %d", res);
+                        break;
+                    }
                     }
                 }
             });
