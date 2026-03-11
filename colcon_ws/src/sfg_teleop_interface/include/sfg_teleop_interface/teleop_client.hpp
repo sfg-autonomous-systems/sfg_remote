@@ -6,6 +6,7 @@
 #include <mutex>
 #include <memory>
 #include <vector>
+#include <map>
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
@@ -54,7 +55,7 @@ namespace sfg_teleop_interface
         explicit TeleopClient();
         ~TeleopClient() override;
         void SwitchToRobot(const std::string &name);
-        std::vector<std::string> GetRobotAgentList() const;
+        const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetRobotAgentMetadata() const;
 
         // Control related
         void PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);
@@ -67,7 +68,7 @@ namespace sfg_teleop_interface
 
     private:
         void CreatePublisherAndSubscriber();
-        void DiscoverAgents();
+        void FetchDiscoveredAgentMetadata();
         void OnImageReceived(const sensor_msgs::msg::Image::ConstSharedPtr &msg);
         SDL_FRect AspectFitRect(int win_w, int win_h) const;
 
@@ -83,7 +84,7 @@ namespace sfg_teleop_interface
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr m_control_pub;
         rclcpp::Client<sfg_agent_msgs::srv::GetDiscoveredAgents>::SharedPtr m_discovery_service;
 
-        std::vector<std::string> m_discovered_robot_names;
+        std::map<std::string, sfg_agent_msgs::msg::Metadata> m_agent_metadata;
         std::string m_robot_name;
         bool m_isArmed;
     };

@@ -14,15 +14,12 @@ namespace sfg_teleop_interface
 
         // create service instances
         m_discovery_service = create_client<sfg_agent_msgs::srv::GetDiscoveredAgents>(RosFqnBuilder().scope(Scope::Local).agent().resource(Resource::Custom, "get_discovered_agents").build());
-        this->DiscoverAgents();
-
-        // create subscriptions and publishers for given robot name
-        this->CreatePublisherAndSubscriber();
-        RCLCPP_INFO(this->get_logger(), "Initialized publisher & subscriber for robot named %s", m_robot_name.c_str());
+        this->FetchDiscoveredAgentMetadata();
     }
 
     TeleopClient::~TeleopClient()
     {
+        // Release heap allocated resources
         std::scoped_lock lk(m_textureMutex);
         if (m_frameTexture)
         {
@@ -31,7 +28,7 @@ namespace sfg_teleop_interface
         }
     }
 
-    void TeleopClient::DiscoverAgents()
+    void TeleopClient::FetchDiscoveredAgentMetadata()
     {
         auto future = m_discovery_service->async_send_request(
             std::make_shared<sfg_agent_msgs::srv::GetDiscoveredAgents::Request>(),
@@ -41,13 +38,15 @@ namespace sfg_teleop_interface
 
                 if (future.valid())
                 {
+                    // clear the list
+                    this->m_agent_metadata.clear();
+
+                    // store the new list/map
                     auto payload = future.get();
 
-                    this->m_discovered_robot_names.clear();
-                    for (const auto &metadata : payload->metadata)
+                    for (auto entry : payload->metadata)
                     {
-                        this->m_discovered_robot_names.push_back(metadata.agent_name);
-                        RCLCPP_INFO(get_logger(), "Name: %s", metadata.agent_name.c_str());
+                        this->m_agent_metadata[entry.agent_name] = entry;
                     }
                 }
             });
@@ -58,15 +57,28 @@ namespace sfg_teleop_interface
         // when name actually changed, recreate subscription with to matching topic
         if (name != m_robot_name)
         {
+            // ...
+            auto iterator = this->m_agent_metadata.find(name);
+            if (iterator == this->m_agent_metadata.end())
+            {
+                return;
+            }
+
+            const auto &selected_agent = iterator->second;
+
+            // print some metadata for selected robot
+            RCLCPP_INFO(get_logger(), "Metadata for robot %s:", selected_agent.agent_name.c_str());
+            RCLCPP_INFO(get_logger(), "  primary camera: %s", selected_agent.cameras.at(0).c_str());
+            RCLCPP_INFO(get_logger(), "  primary lidar:  %s", selected_agent.lidars.at(0).c_str());
+
             m_robot_name = name;
             this->CreatePublisherAndSubscriber();
-            RCLCPP_INFO(this->get_logger(), "Changed Robot name for live video to %s", name.c_str());
         }
     }
 
-    std::vector<std::string> TeleopClient::GetRobotAgentList() const
+    const std::map<std::string, sfg_agent_msgs::msg::Metadata> &TeleopClient::GetRobotAgentMetadata() const
     {
-        return this->m_discovered_robot_names;
+        return this->m_agent_metadata;
     }
 
     void TeleopClient::CreatePublisherAndSubscriber()
@@ -76,7 +88,8 @@ namespace sfg_teleop_interface
 
         // create the camera subscriber
         // topic_string = "/local/" + m_robot_name + "/camera_head/color/image_raw";
-        topic_string = RosFqnBuilder().scope(Scope::Local).agent(m_robot_name).component(Component::Camera, "head").stream(Stream::Color).resource(Resource::ImageRaw).build();
+        const std::string primary_camera_name = this->m_agent_metadata.find(m_robot_name)->second.cameras.at(0);
+        topic_string = RosFqnBuilder().scope(Scope::Local).agent(m_robot_name).component(Component::Camera, primary_camera_name).stream(Stream::Color).resource(Resource::ImageRaw).build();
         auto qos = rclcpp::SensorDataQoS();
         m_image_sub = this->create_subscription<sensor_msgs::msg::Image>(
             topic_string,

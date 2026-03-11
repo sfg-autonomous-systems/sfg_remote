@@ -372,11 +372,11 @@ namespace sfg_teleop_interface
             ImGui::TextUnformatted("Select a robot");
             ImGui::Separator();
 
-            for (const std::string &option : ((TeleopClient *)m_teleop_client_node.get())->GetRobotAgentList())
+            for (const auto &[agent_name, metadata] : ((TeleopClient *)m_teleop_client_node.get())->GetRobotAgentMetadata())
             {
-                if (ImGui::Button(option.c_str(), ImVec2(250.0f, 0.0f)))
+                if (ImGui::Button(agent_name.c_str(), ImVec2(250.0f, 0.0f)))
                 {
-                    ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(option);
+                    ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(agent_name);
                     ImGui::CloseCurrentPopup();
                 }
             }
