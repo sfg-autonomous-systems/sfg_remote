@@ -12,7 +12,7 @@ namespace sfg_teleop_interface
         // create and register teleop node
         this->m_teleop_client_node = std::make_shared<TeleopClient>();
         this->m_ros.Add_Node(m_teleop_client_node);
-        ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(robot_name);
+        ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot("");
     }
 
     Application::~Application()
@@ -347,10 +347,7 @@ namespace sfg_teleop_interface
         ImGui::Text("Right Stick:  X = %d | Y = %d", this->m_right_stick.x_axis_val, this->m_right_stick.y_axis_val);
         // ImGui::Text("Video fps: %.1f", this->m_video_decoder.GetVideoFPS());
 
-        if (this->m_appState.show_robot_selector_dialog)
-        {
-            this->DrawSelectorDialog();
-        }
+        this->DrawSelectorDialog();
 
         // render Gui elements code goes here
         // ...
@@ -361,20 +358,41 @@ namespace sfg_teleop_interface
 
     void Application::DrawSelectorDialog()
     {
-        ImGui::BeginPopupModal("", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-
-        ImGui::Separator();
-
-        for (const std::string &option : ((TeleopClient *)m_teleop_client_node.get())->GetRobotAgentList())
+        if (this->m_appState.show_robot_selector_dialog)
         {
-            if (ImGui::Button(option.c_str(), ImVec2(250.0f, 0.0f)))
-            {
-                ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(option);
-                ImGui::CloseCurrentPopup();
-            }
+            ImGui::OpenPopup("AgentSelectDialog");
+            m_appState.show_robot_selector_dialog = false;
         }
 
-        ImGui::EndPopup();
+        ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+        if (ImGui::BeginPopupModal("AgentSelectDialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::TextUnformatted("Select a robot");
+            ImGui::Separator();
+
+            for (const std::string &option : ((TeleopClient *)m_teleop_client_node.get())->GetRobotAgentList())
+            {
+                if (ImGui::Button(option.c_str(), ImVec2(250.0f, 0.0f)))
+                {
+                    ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(option);
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
+            if (ImGui::Button("Dummy", ImVec2(250, 0)))
+            {
+            }
+
+            ImGui::Separator();
+            if (ImGui::Button("Close", ImVec2(100, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
     }
 
     void Application::Render()
