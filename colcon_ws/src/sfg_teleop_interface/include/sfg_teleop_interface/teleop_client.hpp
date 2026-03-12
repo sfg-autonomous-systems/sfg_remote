@@ -6,7 +6,9 @@
 #include <mutex>
 #include <memory>
 #include <vector>
+#include <array>
 #include <map>
+#include <chrono>
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
@@ -60,6 +62,7 @@ namespace sfg_teleop_interface
         void SwitchToRobot(const std::string &name);
         const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetAllRobotAgentMetadata() const;
         const sfg_agent_msgs::msg::Metadata *GetMetadataForSelected() const;
+        const float GetVideoFrametime() const;
 
         // Control related
         void PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);
@@ -82,7 +85,7 @@ namespace sfg_teleop_interface
         SDL_PixelFormat m_pixel_format = SDL_PIXELFORMAT_UNKNOWN;
         mutable std::mutex m_texture_mutex;
         int m_texture_width, m_texture_height = 0;
-        float m_video_frametime = 0.0f;
+        float m_video_frametime = 0.0;
 
         // ROS related
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_sub;

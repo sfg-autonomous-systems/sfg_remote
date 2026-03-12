@@ -110,6 +110,11 @@ namespace sfg_teleop_interface
         return &this->m_agent_metadata.at(this->m_robot_name);
     }
 
+    const float TeleopClient::GetVideoFrametime() const
+    {
+        return this->m_video_frametime;
+    }
+
     void TeleopClient::CreatePublisherAndSubscriber()
     {
         using namespace sfg_utils::fqn;
@@ -370,6 +375,34 @@ namespace sfg_teleop_interface
             RCLCPP_ERROR(this->get_logger(), "SDL_UpdateTexture failed: %s", SDL_GetError());
             return;
         }
+
+        // continously measure frametime of camera video stream and apply moving average filter
+        constexpr size_t WindowSize = 60; // average over last 60 frames
+
+        static std::array<double, WindowSize> samples{};
+        static size_t index = 0;
+        static size_t count = 0;
+        static double sum = 0.0;
+        static auto last_frame_received = std::chrono::steady_clock::now();
+
+        auto current_frame_received = std::chrono::steady_clock::now();
+        double dt = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(current_frame_received - last_frame_received)).count();
+        last_frame_received = current_frame_received;
+
+        // Remove oldest value from sum
+        sum -= samples[index];
+
+        // Insert new value
+        samples[index] = dt;
+        sum += dt;
+
+        // Move circular index
+        index = (index + 1) % WindowSize;
+
+        if (count < WindowSize)
+            ++count;
+
+        this->m_video_frametime = static_cast<float>(sum / count);
     }
 
     SDL_FRect TeleopClient::AspectFitRect(int win_w, int win_h) const

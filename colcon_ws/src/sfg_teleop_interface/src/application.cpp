@@ -356,7 +356,7 @@ namespace sfg_teleop_interface
         if (ImGui::Begin("Performance monitor", nullptr, flags))
         {
             // render overlay text in the corner
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", (1000.0f / this->m_framerate), this->m_framerate);
+            ImGui::Text("Application average %.2f ms/frame (%.1f fps)", (1000.0f / this->m_framerate), this->m_framerate);
             ImGui::Text("Left  Stick:  X = %d | Y = %d", this->m_left_stick.x_axis_val, this->m_left_stick.y_axis_val);
             ImGui::Text("Right Stick:  X = %d | Y = %d", this->m_right_stick.x_axis_val, this->m_right_stick.y_axis_val);
             ImGui::End();
@@ -381,6 +381,8 @@ namespace sfg_teleop_interface
                 {
                     ImGui::Text(" %s ", lidar.c_str());
                 }
+                float frametime = ((TeleopClient *)m_teleop_client_node.get())->GetVideoFrametime();
+                ImGui::Text("Video frametime %.2f ms/frame (%.1f fps)", frametime, (1000.0f / frametime));
             }
             else
             {
