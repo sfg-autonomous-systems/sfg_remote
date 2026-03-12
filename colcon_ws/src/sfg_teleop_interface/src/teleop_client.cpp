@@ -28,6 +28,11 @@ namespace sfg_teleop_interface
         }
     }
 
+    void TeleopClient::RefreshDiscoveryNow()
+    {
+        this->FetchDiscoveredAgentMetadata();
+    }
+
     void TeleopClient::FetchDiscoveredAgentMetadata()
     {
         auto future = m_discovery_service->async_send_request(

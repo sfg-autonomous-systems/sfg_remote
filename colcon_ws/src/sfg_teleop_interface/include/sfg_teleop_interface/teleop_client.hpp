@@ -55,6 +55,8 @@ namespace sfg_teleop_interface
     public:
         explicit TeleopClient();
         ~TeleopClient() override;
+
+        void RefreshDiscoveryNow();
         void SwitchToRobot(const std::string &name);
         const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetAllRobotAgentMetadata() const;
 

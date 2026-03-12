@@ -347,24 +347,35 @@ namespace sfg_teleop_interface
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::SetNextWindowBgAlpha(0.3f);
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
                                  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
                                  ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
-        ImGui::Begin("Simple perf monitor", NULL, flags);
 
-        // render overlay text in the corner
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", (1000.0f / this->m_framerate), this->m_framerate);
-        ImGui::Text("Left  Stick:  X = %d | Y = %d", this->m_left_stick.x_axis_val, this->m_left_stick.y_axis_val);
-        ImGui::Text("Right Stick:  X = %d | Y = %d", this->m_right_stick.x_axis_val, this->m_right_stick.y_axis_val);
-        // ImGui::Text("Video fps: %.1f", this->m_video_decoder.GetVideoFPS());
+        ImGui::SetNextWindowPos(ImVec2(50.0, 30.0));
+        ImGui::SetNextWindowBgAlpha(0.3f);
+        if (ImGui::Begin("Performance monitor", nullptr, flags))
+        {
+            // render overlay text in the corner
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", (1000.0f / this->m_framerate), this->m_framerate);
+            ImGui::Text("Left  Stick:  X = %d | Y = %d", this->m_left_stick.x_axis_val, this->m_left_stick.y_axis_val);
+            ImGui::Text("Right Stick:  X = %d | Y = %d", this->m_right_stick.x_axis_val, this->m_right_stick.y_axis_val);
+            ImGui::End();
+        }
 
-        this->DrawSelectorDialog();
+        ImGui::SetNextWindowPos(ImVec2(50.0, 100.0));
+        ImGui::SetNextWindowBgAlpha(0.3f);
+        if (ImGui::Begin("Robot agent data", nullptr, flags))
+        {
+            ImGui::Text("Test text field");
+            ImGui::Text("Name: %s", "<name>");
+            ImGui::End();
+        }
 
         // render Gui elements code goes here
         // ...
 
-        ImGui::End();
+        this->DrawSelectorDialog();
+
         ImGui::Render();
     }
 
@@ -393,15 +404,16 @@ namespace sfg_teleop_interface
                 }
             }
 
-            if (ImGui::Button("Dummy", ImVec2(250, 0)))
-            {
-                ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot("Dummy");
-            }
-
             ImGui::Separator();
-            if (ImGui::Button("Cancel", ImVec2(100, 0)))
+            if (ImGui::Button("Cancel", ImVec2(85, 0)))
             {
                 ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Refresh", ImVec2(85, 0)))
+            {
+                // refresh list of discovered robot agents
+                ((TeleopClient *)m_teleop_client_node.get())->RefreshDiscoveryNow();
             }
 
             ImGui::EndPopup();
