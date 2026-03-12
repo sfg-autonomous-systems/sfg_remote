@@ -115,6 +115,11 @@ namespace sfg_teleop_interface
         return this->m_video_frametime;
     }
 
+    const bool TeleopClient::IsArmed() const
+    {
+        return this->m_is_armed;
+    }
+
     void TeleopClient::CreatePublisherAndSubscriber()
     {
         using namespace sfg_utils::fqn;

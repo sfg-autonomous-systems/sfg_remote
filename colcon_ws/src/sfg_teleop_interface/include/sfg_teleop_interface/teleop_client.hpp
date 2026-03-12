@@ -60,9 +60,12 @@ namespace sfg_teleop_interface
 
         void RefreshDiscoveryNow();
         void SwitchToRobot(const std::string &name);
+
+        // Getters
         const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetAllRobotAgentMetadata() const;
         const sfg_agent_msgs::msg::Metadata *GetMetadataForSelected() const;
         const float GetVideoFrametime() const;
+        const bool IsArmed() const;
 
         // Control related
         void PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);

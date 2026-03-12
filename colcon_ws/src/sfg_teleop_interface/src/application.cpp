@@ -381,6 +381,16 @@ namespace sfg_teleop_interface
                 {
                     ImGui::Text(" %s ", lidar.c_str());
                 }
+
+                if (((TeleopClient *)m_teleop_client_node.get())->IsArmed())
+                {
+                    ImGui::TextColored(ImVec4(0, 255, 0, 1), "ARMED");
+                }
+                else
+                {
+                    ImGui::TextColored(ImVec4(255, 0, 0, 1), "DISARMED");
+                }
+
                 float frametime = ((TeleopClient *)m_teleop_client_node.get())->GetVideoFrametime();
                 ImGui::Text("Video frametime %.2f ms/frame (%.1f fps)", frametime, (1000.0f / frametime));
             }
