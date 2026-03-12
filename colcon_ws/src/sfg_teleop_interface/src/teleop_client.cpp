@@ -8,7 +8,7 @@ namespace sfg_teleop_interface
     const double max_angular_velocity = 1.5; // in rad/s
     const double max_stick_val_abs = 32767;
 
-    TeleopClient::TeleopClient() : Node("teleop_client"), m_robot_name(""), m_isArmed(false)
+    TeleopClient::TeleopClient() : Node("teleop_client"), m_robot_name(""), m_is_armed(false)
     {
         using namespace sfg_utils::fqn;
 
@@ -20,11 +20,11 @@ namespace sfg_teleop_interface
     TeleopClient::~TeleopClient()
     {
         // Release heap allocated resources
-        std::scoped_lock lk(m_textureMutex);
-        if (m_frameTexture)
+        std::scoped_lock lk(m_texture_mutex);
+        if (m_frame_texture)
         {
-            SDL_DestroyTexture(m_frameTexture);
-            m_frameTexture = nullptr;
+            SDL_DestroyTexture(m_frame_texture);
+            m_frame_texture = nullptr;
         }
     }
 
@@ -80,7 +80,7 @@ namespace sfg_teleop_interface
         RCLCPP_INFO(get_logger(), "  primary lidar:  %s", selected_agent.lidars.at(0).c_str());
 
         // disarm before switching to another
-        if (this->m_isArmed)
+        if (this->m_is_armed)
         {
             this->Disarm();
         }
@@ -137,7 +137,7 @@ namespace sfg_teleop_interface
     void TeleopClient::PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y)
     {
         // skip if robot is disarmed
-        if (!this->m_isArmed)
+        if (!this->m_is_armed)
         {
             return;
         }
@@ -221,21 +221,21 @@ namespace sfg_teleop_interface
                     case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
                     {
                         RCLCPP_ERROR(get_logger(), "Arming failed!");
-                        this->m_isArmed = false;
+                        this->m_is_armed = false;
                         break;
                     }
 
                     case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
                     {
                         RCLCPP_INFO(get_logger(), "Arming successful.");
-                        this->m_isArmed = true;
+                        this->m_is_armed = true;
                         break;
                     }
 
                     case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
                     {
                         RCLCPP_INFO(get_logger(), "Arming not implemented (ignored).");
-                        this->m_isArmed = true;
+                        this->m_is_armed = true;
                         break;
                     }
 
@@ -283,14 +283,14 @@ namespace sfg_teleop_interface
                     case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
                     {
                         RCLCPP_INFO(get_logger(), "Disarming successful.");
-                        this->m_isArmed = false;
+                        this->m_is_armed = false;
                         break;
                     }
 
                     case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
                     {
                         RCLCPP_INFO(get_logger(), "Disarming not implemented (ignored).");
-                        this->m_isArmed = true;
+                        this->m_is_armed = true;
                         break;
                     }
 
@@ -306,11 +306,11 @@ namespace sfg_teleop_interface
 
     void TeleopClient::RenderVideoFrame(const int window_width, const int window_height)
     {
-        if (m_frameTexture && m_renderer)
+        if (m_frame_texture && m_renderer)
         {
             // Get rect for correct positioning and scaling with respect to the window dimension
             SDL_FRect destination = AspectFitRect(window_width, window_height);
-            SDL_RenderTexture(m_renderer, m_frameTexture, nullptr, &destination);
+            SDL_RenderTexture(m_renderer, m_frame_texture, nullptr, &destination);
         }
     }
 
@@ -339,33 +339,33 @@ namespace sfg_teleop_interface
         const int image_width = static_cast<int>(msg->width);
         const int image_height = static_cast<int>(msg->height);
 
-        std::scoped_lock lk(m_textureMutex);
-        if (!m_frameTexture || image_width != m_textureWidth || image_height != m_textureHeight || fmt != m_pixelFormat)
+        std::scoped_lock lk(m_texture_mutex);
+        if (!m_frame_texture || image_width != m_texture_width || image_height != m_texture_height || fmt != m_pixel_format)
         {
             // destroy and recreate matching texture
-            if (m_frameTexture)
+            if (m_frame_texture)
             {
-                SDL_DestroyTexture(m_frameTexture);
-                m_frameTexture = nullptr;
+                SDL_DestroyTexture(m_frame_texture);
+                m_frame_texture = nullptr;
             }
 
-            m_frameTexture = SDL_CreateTexture(m_renderer, fmt, SDL_TEXTUREACCESS_STREAMING, image_width, image_height);
-            if (!m_frameTexture)
+            m_frame_texture = SDL_CreateTexture(m_renderer, fmt, SDL_TEXTUREACCESS_STREAMING, image_width, image_height);
+            if (!m_frame_texture)
             {
                 RCLCPP_ERROR(this->get_logger(), "SDL_CreateTexture failed: %s", SDL_GetError());
                 return;
             }
 
             // store updated texture dimensions
-            m_textureWidth = image_width;
-            m_textureHeight = image_height;
-            m_pixelFormat = fmt;
+            m_texture_width = image_width;
+            m_texture_height = image_height;
+            m_pixel_format = fmt;
 
             RCLCPP_INFO(this->get_logger(), "Recreated video texture: %dx%d %s", image_width, image_height, msg->encoding.c_str());
         }
 
         // Upload image into texture for subsequent rendering
-        if (!SDL_UpdateTexture(m_frameTexture, nullptr, msg->data.data(), static_cast<int>(msg->step)) != 0)
+        if (!SDL_UpdateTexture(m_frame_texture, nullptr, msg->data.data(), static_cast<int>(msg->step)) != 0)
         {
             RCLCPP_ERROR(this->get_logger(), "SDL_UpdateTexture failed: %s", SDL_GetError());
             return;
@@ -375,11 +375,11 @@ namespace sfg_teleop_interface
     SDL_FRect TeleopClient::AspectFitRect(int win_w, int win_h) const
     {
         SDL_FRect dst{0.f, 0.f, 0.f, 0.f};
-        if (win_w <= 0 || win_h <= 0 || m_textureWidth <= 0 || m_textureHeight <= 0)
+        if (win_w <= 0 || win_h <= 0 || m_texture_width <= 0 || m_texture_height <= 0)
             return dst;
 
         const float win_aspect = static_cast<float>(win_w) / static_cast<float>(win_h);
-        const float img_aspect = static_cast<float>(m_textureWidth) / static_cast<float>(m_textureHeight);
+        const float img_aspect = static_cast<float>(m_texture_width) / static_cast<float>(m_texture_height);
 
         if (win_aspect > img_aspect)
         {

@@ -78,10 +78,11 @@ namespace sfg_teleop_interface
 
     private:
         SDL_Renderer *m_renderer = nullptr;
-        SDL_Texture *m_frameTexture = nullptr;
-        SDL_PixelFormat m_pixelFormat = SDL_PIXELFORMAT_UNKNOWN;
-        mutable std::mutex m_textureMutex;
-        int m_textureWidth, m_textureHeight = 0;
+        SDL_Texture *m_frame_texture = nullptr;
+        SDL_PixelFormat m_pixel_format = SDL_PIXELFORMAT_UNKNOWN;
+        mutable std::mutex m_texture_mutex;
+        int m_texture_width, m_texture_height = 0;
+        float m_video_frametime = 0.0f;
 
         // ROS related
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_sub;
@@ -91,6 +92,6 @@ namespace sfg_teleop_interface
 
         std::map<std::string, sfg_agent_msgs::msg::Metadata> m_agent_metadata;
         std::string m_robot_name;
-        bool m_isArmed;
+        bool m_is_armed;
     };
 }
