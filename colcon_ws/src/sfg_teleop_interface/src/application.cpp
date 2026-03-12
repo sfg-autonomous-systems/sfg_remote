@@ -366,8 +366,26 @@ namespace sfg_teleop_interface
         ImGui::SetNextWindowBgAlpha(0.3f);
         if (ImGui::Begin("Robot agent data", nullptr, flags))
         {
-            ImGui::Text("Test text field");
-            ImGui::Text("Name: %s", "<name>");
+            const auto *data = ((TeleopClient *)m_teleop_client_node.get())->GetMetadataForSelected();
+            if (data)
+            {
+                ImGui::Text("Selected robot agent");
+                ImGui::Text("Name: %s", data->agent_name.c_str());
+                ImGui::Text("Cameras: ");
+                for (const auto &cam : data->cameras)
+                {
+                    ImGui::Text(" %s ", cam.c_str());
+                }
+                ImGui::Text("Lidars: ");
+                for (const auto &lidar : data->lidars)
+                {
+                    ImGui::Text(" %s ", lidar.c_str());
+                }
+            }
+            else
+            {
+                ImGui::Text("Press X to see available robots");
+            }
             ImGui::End();
         }
 

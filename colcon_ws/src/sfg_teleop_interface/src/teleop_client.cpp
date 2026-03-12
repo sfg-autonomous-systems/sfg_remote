@@ -101,6 +101,15 @@ namespace sfg_teleop_interface
         return this->m_agent_metadata;
     }
 
+    const sfg_agent_msgs::msg::Metadata *TeleopClient::GetMetadataForSelected() const
+    {
+        if (m_robot_name == "")
+        {
+            return nullptr;
+        }
+        return &this->m_agent_metadata.at(this->m_robot_name);
+    }
+
     void TeleopClient::CreatePublisherAndSubscriber()
     {
         using namespace sfg_utils::fqn;
