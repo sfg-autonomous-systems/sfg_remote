@@ -29,6 +29,12 @@ Gamepad Mode:
 
 Software can be installed like on any other ubuntu desktop machine.
 
+## Work around for GUI app start problem
+Run
+```
+sudo xhost +local:
+``` 
+
 ## External resources
 [Official Product Page](https://www.steamdeck.com/en/oled)
 
