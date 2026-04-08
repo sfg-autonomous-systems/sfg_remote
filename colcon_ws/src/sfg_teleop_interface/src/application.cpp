@@ -427,6 +427,12 @@ namespace sfg_teleop_interface
 
             for (const auto &[agent_name, metadata] : ((TeleopClient *)m_teleop_client_node.get())->GetAllRobotAgentMetadata())
             {
+                // skip agents with invalid name
+                if (agent_name == "")
+                {
+                    continue;
+                }
+
                 if (ImGui::Button(agent_name.c_str(), ImVec2(250.0f, 0.0f)))
                 {
                     ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(agent_name);
