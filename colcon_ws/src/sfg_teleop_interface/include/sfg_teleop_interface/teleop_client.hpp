@@ -1,21 +1,25 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <mutex>
-#include <memory>
-#include <vector>
 #include <array>
-#include <map>
 #include <chrono>
+#include <cmath>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <vector>
 
-#include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/image.hpp>
-#include <geometry_msgs/msg/twist_stamped.hpp>
 #include "sfg_agent_msgs/srv/get_discovered_agents.hpp"
 #include "sfg_agent_msgs/srv/trigger_action.hpp"
+#include <geometry_msgs/msg/twist_stamped.hpp>
+#include <image_transport/image_transport.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <SDL3/SDL.h>
+#include <sensor_msgs/msg/image.hpp>
+
+// #define _BYPASS_AGENT_DECODER
+// #define _AUTOMATIC_ARMING
 
 namespace sfg_teleop_interface
 {
@@ -64,8 +68,8 @@ namespace sfg_teleop_interface
         // Getters
         const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetAllRobotAgentMetadata() const;
         const sfg_agent_msgs::msg::Metadata *GetMetadataForSelected() const;
-        const float GetVideoFrametime() const;
-        const bool IsArmed() const;
+        float GetVideoFrametime() const;
+        bool IsArmed() const;
 
         // Control related
         void PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y);
@@ -91,7 +95,12 @@ namespace sfg_teleop_interface
         float m_video_frametime = 0.0;
 
         // ROS related
+#ifndef _BYPASS_AGENT_DECODER
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_sub;
+#else
+        image_transport::Subscriber m_image_sub;
+#endif
+
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr m_control_pub;
         rclcpp::Client<sfg_agent_msgs::srv::GetDiscoveredAgents>::SharedPtr m_discovery_service;
         rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedPtr m_trigger_action_service;

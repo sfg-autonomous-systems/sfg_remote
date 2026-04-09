@@ -1,20 +1,20 @@
 #pragma once
 
 #include <chrono>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
 #include <SDL3/SDL_joystick.h>
+#include <SDL3/SDL_main.h>
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 
-#include "sfg_teleop_interface/types.hpp"
 #include "sfg_teleop_interface/ros_pump.hpp"
 #include "sfg_teleop_interface/teleop_client.hpp"
+#include "sfg_teleop_interface/types.hpp"
 
 // compile options
 #define _USE_FULLSCREEN

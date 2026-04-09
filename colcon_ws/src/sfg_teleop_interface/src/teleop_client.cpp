@@ -93,7 +93,10 @@ namespace sfg_teleop_interface
         using namespace sfg_utils::fqn;
         // --> ros2 service call /global/sfg_go2_01/locomotion_controller/trigger_action sfg_agent_msgs/srv/TriggerAction "{action: 'disarm'}"
         this->m_trigger_action_service = create_client<sfg_agent_msgs::srv::TriggerAction>(RosFqnBuilder().scope(Scope::Global).component(Component::LocomotionController).agent(m_robot_name).resource(Resource::TriggerAction).build());
+
+#ifdef _AUTOMATIC_ARMING
         this->Arm();
+#endif
     }
 
     const std::map<std::string, sfg_agent_msgs::msg::Metadata> &TeleopClient::GetAllRobotAgentMetadata() const
@@ -110,12 +113,12 @@ namespace sfg_teleop_interface
         return &this->m_agent_metadata.at(this->m_robot_name);
     }
 
-    const float TeleopClient::GetVideoFrametime() const
+    float TeleopClient::GetVideoFrametime() const
     {
         return this->m_video_frametime;
     }
 
-    const bool TeleopClient::IsArmed() const
+    bool TeleopClient::IsArmed() const
     {
         return this->m_is_armed;
     }
@@ -125,18 +128,32 @@ namespace sfg_teleop_interface
         using namespace sfg_utils::fqn;
         std::string topic_string = "";
 
-        // create the camera subscriber
-        // topic_string = "/local/" + m_robot_name + "/camera_head/color/image_raw";
+#ifndef _BYPASS_AGENT_DECODER
+        // define topic name and qos
         const std::string primary_camera_name = this->m_agent_metadata.find(m_robot_name)->second.cameras.at(0);
         topic_string = RosFqnBuilder().scope(Scope::Local).agent(m_robot_name).component(Component::Camera, primary_camera_name).stream(Stream::Color).resource(Resource::ImageRaw).build();
         auto qos = rclcpp::SensorDataQoS();
+
+        // create the camera subscriber
         m_image_sub = this->create_subscription<sensor_msgs::msg::Image>(
             topic_string,
             qos,
             std::bind(&TeleopClient::OnImageReceived, this, _1));
+#else
+        // define topic name and qos
+        topic_string = "in";
+        auto qos = rmw_qos_profile_sensor_data;
+
+        // create the camera subscriber
+        m_image_sub = image_transport::create_subscription(
+            this,
+            topic_string,
+            std::bind(&TeleopClient::OnImageReceived, this, _1),
+            "ffmpeg",
+            qos);
+#endif
 
         // create command publisher
-        // topic_string = "/global/" + m_robot_name + "/locomotion_controller/cmd_vel";
         topic_string = RosFqnBuilder().scope(Scope::Global).agent(m_robot_name).component(Component::LocomotionController).resource(Resource::CmdVel).build();
         m_control_pub = this->create_publisher<geometry_msgs::msg::TwistStamped>(topic_string, 10);
 
@@ -228,32 +245,32 @@ namespace sfg_teleop_interface
                     auto res = payload->result;
                     switch (res)
                     {
-                    case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
-                    {
-                        RCLCPP_ERROR(get_logger(), "Arming failed!");
-                        this->m_is_armed = false;
-                        break;
-                    }
+                        case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
+                        {
+                            RCLCPP_ERROR(get_logger(), "Arming failed!");
+                            this->m_is_armed = false;
+                            break;
+                        }
 
-                    case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
-                    {
-                        RCLCPP_INFO(get_logger(), "Arming successful.");
-                        this->m_is_armed = true;
-                        break;
-                    }
+                        case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
+                        {
+                            RCLCPP_INFO(get_logger(), "Arming successful.");
+                            this->m_is_armed = true;
+                            break;
+                        }
 
-                    case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
-                    {
-                        RCLCPP_INFO(get_logger(), "Arming not implemented (ignored).");
-                        this->m_is_armed = true;
-                        break;
-                    }
+                        case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
+                        {
+                            RCLCPP_INFO(get_logger(), "Arming not implemented (ignored).");
+                            this->m_is_armed = true;
+                            break;
+                        }
 
-                    default:
-                    {
-                        RCLCPP_WARN(get_logger(), "Arming response status unknown. Status Code = %d", res);
-                        break;
-                    }
+                        default:
+                        {
+                            RCLCPP_WARN(get_logger(), "Arming response status unknown. Status Code = %d", res);
+                            break;
+                        }
                     }
                 }
             });
@@ -284,31 +301,31 @@ namespace sfg_teleop_interface
                     auto res = payload->result;
                     switch (res)
                     {
-                    case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
-                    {
-                        RCLCPP_ERROR(get_logger(), "Disarming failed!");
-                        break;
-                    }
+                        case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
+                        {
+                            RCLCPP_ERROR(get_logger(), "Disarming failed!");
+                            break;
+                        }
 
-                    case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
-                    {
-                        RCLCPP_INFO(get_logger(), "Disarming successful.");
-                        this->m_is_armed = false;
-                        break;
-                    }
+                        case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
+                        {
+                            RCLCPP_INFO(get_logger(), "Disarming successful.");
+                            this->m_is_armed = false;
+                            break;
+                        }
 
-                    case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
-                    {
-                        RCLCPP_INFO(get_logger(), "Disarming not implemented (ignored).");
-                        this->m_is_armed = true;
-                        break;
-                    }
+                        case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
+                        {
+                            RCLCPP_INFO(get_logger(), "Disarming not implemented (ignored).");
+                            this->m_is_armed = true;
+                            break;
+                        }
 
-                    default:
-                    {
-                        RCLCPP_WARN(get_logger(), "Disarming response status unknown. Status Code = %d", res);
-                        break;
-                    }
+                        default:
+                        {
+                            RCLCPP_WARN(get_logger(), "Disarming response status unknown. Status Code = %d", res);
+                            break;
+                        }
                     }
                 }
             });
