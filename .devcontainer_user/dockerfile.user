@@ -4,13 +4,39 @@ WORKDIR ${HOME}/dependencies
 
 # Install SDL dependencies and developer packages
 RUN sudo apt-get update && \
-    sudo apt-get install -y --no-install-recommends ninja-build libsdl2-dev \
-        gnome-desktop-testing libasound2-dev libpulse-dev \
-        libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-        libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
-        libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-        libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev \
-        libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev && \
+    sudo apt-get install -y --no-install-recommends \
+        ninja-build \
+        libsdl2-dev \
+        gnome-desktop-testing \
+        libasound2-dev \
+        libpulse-dev \
+        libaudio-dev \
+        libfribidi-dev \
+        libjack-dev \
+        libsndio-dev \
+        libx11-dev \
+        libxext-dev \
+        libxrandr-dev \
+        libxcursor-dev \
+        libxfixes-dev \
+        libxi-dev \
+        libxss-dev \
+        libxtst-dev \
+        libxkbcommon-dev \
+        libxkbcommon-x11-0 \
+        libdrm-dev \
+        libgbm-dev \
+        libgl1-mesa-dev \
+        libgles2-mesa-dev \
+        libegl1-mesa-dev \
+        libdbus-1-dev \
+        libibus-1.0-dev \
+        libudev-dev \
+        libthai-dev \
+        libpipewire-0.3-dev \
+        libwayland-dev \
+        libdecor-0-dev \
+        liburing-dev && \
     sudo apt-get -y clean && \
     sudo rm -rf /var/cache/apt && \
     sudo rm -rf /var/lib/apt/lists/*
@@ -31,4 +57,6 @@ WORKDIR ${WORKSPACE_DIRECTORY}
 CMD "${REPOSITORY_DIRECTORY}/.devcontainer/scripts/post_start_command" && \
     source "/opt/ros/${ROS_DISTRO}/setup.bash" && \
     sleep infinity
+#   cd "${REPOSITORY_DIRECTORY}/colcon_ws" && \
+#   source "install/setup.bash" && \
 #   ros2 launch sfg_remote_bringup "bringup.launch.py"
