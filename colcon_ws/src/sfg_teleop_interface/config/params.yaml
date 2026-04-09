@@ -1,3 +1,5 @@
 /**:
   ros__parameters:
     # runtime parameters for the remote control GUI app
+    auto_arming: true
+    auto_disarming: true
