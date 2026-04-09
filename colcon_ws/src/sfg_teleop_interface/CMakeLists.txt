@@ -22,6 +22,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
+find_package(image_transport REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL3 REQUIRED sdl3)
 
@@ -38,6 +39,7 @@ set(ROS2_LIBS
     geometry_msgs
     sfg_utils
     sfg_agent_msgs
+    image_transport
 )
 
 set(SOURCES
@@ -49,7 +51,6 @@ set(SOURCES
     ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMGUI_BACKENDS}/imgui_impl_sdl3.cpp
     ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
-
     src/teleop_client.cpp
     src/ros_pump.cpp
     src/application.cpp
