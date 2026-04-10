@@ -12,6 +12,8 @@ namespace sfg_teleop_interface
     {
         using namespace sfg_utils::fqn;
 
+        this->m_first_frame_ready = false;
+
         // create service instances
         m_discovery_service = create_client<sfg_agent_msgs::srv::GetDiscoveredAgents>(RosFqnBuilder().scope(Scope::Local).agent().resource(Resource::Custom, "get_discovered_agents").build());
         this->FetchDiscoveredAgentMetadata();
@@ -99,6 +101,18 @@ namespace sfg_teleop_interface
 #endif
     }
 
+    void TeleopClient::DetachFromRobot()
+    {
+        // disarm before detach
+        if (this->m_is_armed)
+        {
+            this->Disarm();
+        }
+        this->DestroyPublisherAndSubscriber();
+        this->m_robot_name = "";
+        this->m_first_frame_ready = false;
+    }
+
     const std::map<std::string, sfg_agent_msgs::msg::Metadata> &TeleopClient::GetAllRobotAgentMetadata() const
     {
         return this->m_agent_metadata;
@@ -159,6 +173,12 @@ namespace sfg_teleop_interface
 
         // create additional subs & pubs below
         // ...
+    }
+
+    void TeleopClient::DestroyPublisherAndSubscriber()
+    {
+        this->m_control_pub = nullptr;
+        this->m_image_sub = nullptr;
     }
 
     void TeleopClient::PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y)
@@ -333,6 +353,12 @@ namespace sfg_teleop_interface
 
     void TeleopClient::RenderVideoFrame(const int window_width, const int window_height)
     {
+        // don't render when detached
+        if (this->m_robot_name == "" || !m_first_frame_ready)
+        {
+            return;
+        }
+
         if (m_frame_texture && m_renderer)
         {
             // Get rect for correct positioning and scaling with respect to the window dimension
@@ -397,6 +423,8 @@ namespace sfg_teleop_interface
             RCLCPP_ERROR(this->get_logger(), "SDL_UpdateTexture failed: %s", SDL_GetError());
             return;
         }
+
+        m_first_frame_ready = true;
 
         // continously measure frametime of camera video stream and apply moving average filter
         constexpr size_t WindowSize = 60; // average over last 60 frames

@@ -70,6 +70,8 @@ namespace sfg_teleop_interface
         void DrawSelectorDialog();
         void Render();
 
+        void ToggleRobotAttachment();
+
     private:
         SDL_Window *m_window;
         SDL_DisplayID m_displayId = 0;

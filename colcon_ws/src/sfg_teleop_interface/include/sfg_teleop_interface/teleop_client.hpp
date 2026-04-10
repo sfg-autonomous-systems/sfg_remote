@@ -64,6 +64,7 @@ namespace sfg_teleop_interface
 
         void RefreshDiscoveryNow();
         void SwitchToRobot(const std::string &name);
+        void DetachFromRobot();
 
         // Getters
         const std::map<std::string, sfg_agent_msgs::msg::Metadata> &GetAllRobotAgentMetadata() const;
@@ -82,6 +83,7 @@ namespace sfg_teleop_interface
 
     private:
         void CreatePublisherAndSubscriber();
+        void DestroyPublisherAndSubscriber();
         void FetchDiscoveredAgentMetadata();
         void OnImageReceived(const sensor_msgs::msg::Image::ConstSharedPtr &msg);
         SDL_FRect AspectFitRect(int win_w, int win_h) const;
@@ -108,5 +110,6 @@ namespace sfg_teleop_interface
         std::map<std::string, sfg_agent_msgs::msg::Metadata> m_agent_metadata;
         std::string m_robot_name;
         bool m_is_armed;
+        bool m_first_frame_ready;
     };
 }

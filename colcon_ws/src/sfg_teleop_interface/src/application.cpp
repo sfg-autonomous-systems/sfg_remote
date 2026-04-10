@@ -335,6 +335,8 @@ namespace sfg_teleop_interface
         this->m_right_stick.x_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX);
         this->m_right_stick.y_axis_val = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY);
 
+        this->ToggleRobotAttachment();
+
         // update data for 2D GUI overlay elements here
         ImGuiIO &io = ImGui::GetIO();
         this->m_framerate = io.Framerate;
@@ -436,6 +438,7 @@ namespace sfg_teleop_interface
                 if (ImGui::Button(agent_name.c_str(), ImVec2(250.0f, 0.0f)))
                 {
                     ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot(agent_name);
+                    // this->m_appState.start_stream_marker = true;
                     ImGui::CloseCurrentPopup();
                 }
             }
@@ -463,7 +466,17 @@ namespace sfg_teleop_interface
         // clear the render target (backbuffer)
         ImGuiIO &io = ImGui::GetIO();
         SDL_SetRenderScale(this->m_renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-        SDL_SetRenderDrawColorFloat(this->m_renderer, 255.0f, 255.0f, 255.0f, 1.0f);
+
+        // insert black frame when user switches to new video stream
+        if (this->m_appState.start_stream_marker)
+        {
+            SDL_SetRenderDrawColorFloat(this->m_renderer, 0.0f, 0.0f, 0.0f, 1.0f);
+            // this->m_appState.start_stream_marker = false;
+        }
+        else
+        {
+            SDL_SetRenderDrawColorFloat(this->m_renderer, 255.0f, 255.0f, 255.0f, 1.0f);
+        }
         SDL_RenderClear(this->m_renderer);
 
         // render directly with SDL
@@ -479,6 +492,31 @@ namespace sfg_teleop_interface
 
         // present rendered frame
         SDL_RenderPresent(this->m_renderer);
+    }
+
+    void Application::ToggleRobotAttachment()
+    {
+        static int64_t last_toggle = now_ms();
+        int64_t current_time = now_ms();
+
+        if (((TeleopClient *)m_teleop_client_node.get())->GetMetadataForSelected() == nullptr)
+        {
+            if (current_time - last_toggle > 3500)
+            {
+                ((TeleopClient *)m_teleop_client_node.get())->SwitchToRobot("sfg-go2-01");
+                this->m_appState.start_stream_marker = true;
+                last_toggle = current_time;
+            }
+        }
+        else
+        {
+            if (current_time - last_toggle > 2700)
+            {
+                ((TeleopClient *)m_teleop_client_node.get())->DetachFromRobot();
+                this->m_appState.start_stream_marker = false;
+                last_toggle = current_time;
+            }
+        }
     }
 
     const SDL_DisplayMode *Application::GetFullscreenMode() const

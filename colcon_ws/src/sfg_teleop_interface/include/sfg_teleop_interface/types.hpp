@@ -11,6 +11,7 @@ namespace sfg_teleop_interface
 
     struct AppState
     {
+        bool start_stream_marker = false;
         bool running = true;
         bool show_robot_selector_dialog = false;
     };
