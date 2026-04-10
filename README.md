@@ -6,7 +6,7 @@ Username: sfg-user
 Password: sfg-user
 Hostname: sfg-steamdeck-01
 
-Connect to SFG-6 wifi and assign DHCP reservation for 192.168.50.71 in OPNsense 
+Connect to SFG-6G WiFi and assign DHCP reservation for 192.168.50.71 in OPNsense 
 
 ## Usage
 For stationary usage a USB C (thunderbolt) dock can be connected to use external mouse, keyboard, monitor(s), ethernet, etc. 
