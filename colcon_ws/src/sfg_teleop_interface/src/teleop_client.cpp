@@ -178,7 +178,12 @@ namespace sfg_teleop_interface
     void TeleopClient::DestroyPublisherAndSubscriber()
     {
         this->m_control_pub = nullptr;
+
+#ifndef _BYPASS_AGENT_DECODER
         this->m_image_sub = nullptr;
+#else
+        this->m_image_sub.shutdown();
+#endif
     }
 
     void TeleopClient::PublishMoveCommand(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y)
