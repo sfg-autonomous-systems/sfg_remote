@@ -15,8 +15,12 @@ set(EXECUTABLE_NAME "remote_control_station")
 # ########################################################################################################
 # Find dependencies.                                                                                     #
 # ########################################################################################################
+find_package(PkgConfig REQUIRED)
 find_package(ament_cmake REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -24,7 +28,6 @@ find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
 find_package(sfg_imgui_vendor REQUIRED)
 find_package(image_transport REQUIRED)
-find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL3 REQUIRED sdl3)
 
 # ########################################################################################################
