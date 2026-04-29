@@ -10,6 +10,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+cmake_policy(SET CMP0072 NEW)
+cmake_policy(SET CMP0079 NEW)
+
 set(EXECUTABLE_NAME "remote_control_station")
 
 # ########################################################################################################
@@ -17,7 +20,6 @@ set(EXECUTABLE_NAME "remote_control_station")
 # ########################################################################################################
 find_package(PkgConfig REQUIRED)
 find_package(ament_cmake REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
@@ -28,54 +30,34 @@ find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
 find_package(sfg_imgui_vendor REQUIRED)
 find_package(image_transport REQUIRED)
-pkg_check_modules(SDL3 REQUIRED sdl3)
 
 # ########################################################################################################
 # Add nodes and libraries.                                                                               #
 # ########################################################################################################
-# ImGui directories
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
-set(IMGUI_BACKENDS ${IMGUI_DIR}/backends)
-set(ROS2_LIBS
-    rclcpp
-    std_msgs
-    sensor_msgs
-    geometry_msgs
-    sfg_utils
-    sfg_agent_msgs
-    sfg_imgui_vendor
-    image_transport
-)
-
 set(SOURCES
 
-    # Imgui sources
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_BACKENDS}/imgui_impl_sdl3.cpp
-    ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
-
-    # Local sources
-    src/teleop_client.cpp
-    src/ros_pump.cpp
-    src/application.cpp
-    src/main.cpp
+    # src/teleop_client.cpp
+    # src/ros_pump.cpp
+    # src/application.cpp
+    # src/main.cpp
 )
 
-add_executable(${EXECUTABLE_NAME} ${SOURCES})
-ament_target_dependencies(${EXECUTABLE_NAME} ${SDL3_LIBRARIES} ${ROS2_LIBS})
-target_include_directories(${EXECUTABLE_NAME} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include> PRIVATE
-    ${IMGUI_DIR}
-    ${IMGUI_BACKENDS}
-    ${SDL3_INCLUDE_DIRS}
+sfg_utils__add_component(${EXECUTABLE_NAME} "${PROJECT_NAME}::TeleopInterface"
+    SOURCES
+    "src/app/teleop_interface_gui.cpp"
+    "src/teleop_interface.cpp"
+    "src/teleop_interface_component.cpp"
+    AMENT_DEPENDENCIES
+    geometry_msgs
+    image_transport
+    rclcpp
+    rclcpp_components
+    sensor_msgs
+    sfg_agent_msgs
+    sfg_imgui_vendor
+    sfg_utils
+    std_msgs
 )
-
-install(TARGETS ${EXECUTABLE_NAME}
-    DESTINATION lib/${PROJECT_NAME})
 
 # ########################################################################################################
 # Add other files/directories.                                                                           #

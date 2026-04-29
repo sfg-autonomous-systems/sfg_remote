@@ -42,6 +42,7 @@ RUN sudo apt-get update && \
         libdecor-0-dev \
         liburing-dev \
         libgtk-3-dev \
+        mesa-utils \
         vulkan-tools && \
     sudo apt-get -y autoremove && \
     sudo apt-get -y clean && \

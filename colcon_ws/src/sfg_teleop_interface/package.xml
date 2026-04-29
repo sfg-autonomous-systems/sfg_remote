@@ -7,7 +7,6 @@
   <maintainer email="elgeit00@hs-esslingen.de">Elias Geiger</maintainer>
   <license>MIT</license>
 
-  <depend>ament_index_cpp</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>
   <depend>rclcpp_components</depend>
@@ -15,8 +14,8 @@
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>sfg_agent_msgs</depend>
-  <depend>sfg_utils</depend>
   <depend>sfg_imgui_vendor</depend>
+  <depend>sfg_utils</depend>
   <depend>image_transport</depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
