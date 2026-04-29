@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(sfg_teleop_interface)
 
-# Default to C++14
+# Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -22,6 +22,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
+find_package(sfg_imgui_vendor REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL3 REQUIRED sdl3)
@@ -39,6 +40,7 @@ set(ROS2_LIBS
     geometry_msgs
     sfg_utils
     sfg_agent_msgs
+    sfg_imgui_vendor
     image_transport
 )
 
@@ -51,6 +53,8 @@ set(SOURCES
     ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMGUI_BACKENDS}/imgui_impl_sdl3.cpp
     ${IMGUI_BACKENDS}/imgui_impl_sdlrenderer3.cpp
+
+    # Local sources
     src/teleop_client.cpp
     src/ros_pump.cpp
     src/application.cpp
