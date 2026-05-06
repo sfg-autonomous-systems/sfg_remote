@@ -16,6 +16,6 @@ namespace sfg_teleop_interface
             {
                 return std::make_unique<sfg_teleop_interface::app::TeleopInterfaceGui>(this);
             },
-            sfg_imgui_vendor::MainWindow::Flags::Resizable | sfg_imgui_vendor::MainWindow::Flags::Gamepad | sfg_imgui_vendor::MainWindow::Flags::VSync);
+            sfg_imgui_vendor::MainWindow::Flags::Resizable | sfg_imgui_vendor::MainWindow::Flags::Gamepad | sfg_imgui_vendor::MainWindow::Flags::VSync | sfg_imgui_vendor::MainWindow::Flags::Fullscreen);
     }
 }
