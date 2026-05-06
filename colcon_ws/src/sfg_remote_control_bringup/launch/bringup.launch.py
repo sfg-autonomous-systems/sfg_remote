@@ -55,6 +55,22 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
+    teleop_node = ComposableNode(
+        package="sfg_teleop_interface",
+        plugin="sfg_teleop_interface::TeleopInterface",
+        name="teleop_interface",
+        namespace=local_namespace.build(RosFqnSegment.Scope, RosFqnSegment.Agent),
+        parameters=[
+            PathJoinSubstitution(
+                [
+                    FindPackageShare(package_name),
+                    "config",
+                    "teleop.yaml",
+                ]
+            ),
+        ],
+    )
+
     return LaunchDescription(
         [
             *agent_launch_description_entities.launch_arguments,
@@ -70,6 +86,7 @@ def generate_launch_description() -> LaunchDescription:
                     *agent_launch_description_entities.composable_nodes,
                     agent_discoverer_node,
                     agent_decoder_node,
+                    teleop_node,
                 ],
                 output="screen",
             ),

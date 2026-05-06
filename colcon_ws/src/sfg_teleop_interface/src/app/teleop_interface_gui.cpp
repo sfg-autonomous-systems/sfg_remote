@@ -11,6 +11,6 @@ namespace sfg_teleop_interface::app
     void TeleopInterfaceGui::render_internal()
     {
         auto &io = ImGui::GetIO();
-        std::cout << "Test\n";
+        // std::cout << "Test\n";
     }
 }
