@@ -3,6 +3,7 @@
 #include <imgui/imgui.h>
 #include <rclcpp/rclcpp.hpp>
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_joystick.h>
 
 #include "sfg_imgui_vendor/gui_element.hpp"
 
@@ -17,5 +18,5 @@ namespace sfg_teleop_interface::app
         void render_internal() override;
 
     private:
-    };
+        };
 }
