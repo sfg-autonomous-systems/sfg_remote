@@ -28,8 +28,6 @@ namespace sfg_teleop_interface::app
 
     TeleopInterfaceGui::~TeleopInterfaceGui()
     {
-        //
-
         if (m_gamepad)
         {
             SDL_CloseGamepad(m_gamepad);
@@ -45,6 +43,8 @@ namespace sfg_teleop_interface::app
         ImGui::SetNextWindowSize(io.DisplaySize);
         ImGui::Begin("##main_window", nullptr, s_main_window_flags);
 
+        render_video_frame();
+        render_overlay();
         // ...
 
         ImGui::End();
