@@ -9,14 +9,30 @@
 
 namespace sfg_teleop_interface::app
 {
+    struct JoystickIdDel
+    {
+        void operator()(SDL_JoystickID *p) const noexcept
+        {
+            if (p)
+                SDL_free(p);
+        }
+    };
+
+    using JoystickIdPtr = std::unique_ptr<SDL_JoystickID, JoystickIdDel>;
+
     class TeleopInterfaceGui : public sfg_imgui_vendor::GuiElement
     {
     public:
         TeleopInterfaceGui(rclcpp::Node *node);
+        ~TeleopInterfaceGui();
 
     protected:
         void render_internal() override;
 
     private:
-        };
+        void init_gamepad();
+
+    private:
+        SDL_Gamepad *m_gamepad;
+    };
 }

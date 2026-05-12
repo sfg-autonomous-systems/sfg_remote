@@ -14,6 +14,16 @@ namespace sfg_teleop_interface::app
 
     TeleopInterfaceGui::TeleopInterfaceGui(rclcpp::Node *node)
     {
+        init_gamepad();
+    }
+
+    TeleopInterfaceGui::~TeleopInterfaceGui()
+    {
+        if (m_gamepad)
+        {
+            SDL_CloseGamepad(m_gamepad);
+            m_gamepad = nullptr;
+        }
     }
 
     void TeleopInterfaceGui::render_internal()
@@ -27,5 +37,36 @@ namespace sfg_teleop_interface::app
         // ...
 
         ImGui::End();
+    }
+
+    void TeleopInterfaceGui::init_gamepad()
+    {
+        int numJoysticks = 0;
+        JoystickIdPtr joystickIdList(SDL_GetJoysticks(&numJoysticks));
+
+        for (int i = 0; i < numJoysticks; i++)
+        {
+            SDL_JoystickID jid = joystickIdList.get()[i];
+            if (SDL_IsGamepad(jid))
+            {
+                m_gamepad = SDL_OpenGamepad(jid);
+                if (!m_gamepad)
+                {
+                    std::cerr << "Failed to open gamepad " << jid << ": " << SDL_GetError() << "\n";
+                    continue;
+                }
+
+                const char *name = SDL_GetGamepadName(m_gamepad);
+                SDL_GamepadType type = SDL_GetGamepadType(m_gamepad);
+                std::cout << "Opened gamepad ID " << jid << " | Name: " << (name ? name : "Unknown") << " | Type: " << type << "\n";
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        // runtime error
+        std::cerr << "No Gamepad was found!" << "\n";
     }
 }
