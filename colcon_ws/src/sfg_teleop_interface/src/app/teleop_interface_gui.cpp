@@ -33,6 +33,11 @@ namespace sfg_teleop_interface::app
             SDL_CloseGamepad(m_gamepad);
             m_gamepad = nullptr;
         }
+
+        if (m_node)
+        {
+            m_node = nullptr;
+        }
     }
 
     void TeleopInterfaceGui::render_internal()
