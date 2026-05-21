@@ -76,7 +76,6 @@ namespace sfg_teleop_interface::app
                 m_gamepad = SDL_OpenGamepad(jid);
                 if (!m_gamepad)
                 {
-                    // std::cerr << "Failed to open gamepad " << jid << ": " << SDL_GetError() << "\n";
                     RCLCPP_WARN(this->m_node->get_logger(), "Could not open gamepad %u: %s", jid, SDL_GetError());
                     continue;
                 }
@@ -94,7 +93,7 @@ namespace sfg_teleop_interface::app
         }
 
         RCLCPP_ERROR(this->m_node->get_logger(), "No Gamepad was found!");
-        // throw runtime error ...
+        throw std::runtime_error("Failed to initialize. No Gamepad!");
     }
 
     void TeleopInterfaceGui::create_publisher_and_subscriber()
