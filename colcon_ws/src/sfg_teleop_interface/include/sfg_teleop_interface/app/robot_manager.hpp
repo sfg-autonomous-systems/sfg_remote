@@ -19,11 +19,13 @@ namespace sfg_teleop_interface::app
         ~RobotManager();
 
         void refresh_discovery_now();
+        const std::map<std::string, sfg_agent_msgs::msg::Metadata> &get_all_robot_agent_metadata() const;
+        const sfg_agent_msgs::msg::Metadata *get_metadata_for_selected() const;
 
     private:
         void create_publisher_and_subscriber();
         void destroy_publisher_and_subscriber();
-        void publish_move_command();
+        void publish_move_command(double, double, double, double);
         void fetch_discovery_agents_metadata();
         void on_image_received(const sensor_msgs::msg::Image::ConstSharedPtr &msg);
 
@@ -37,5 +39,6 @@ namespace sfg_teleop_interface::app
 
         std::map<std::string, sfg_agent_msgs::msg::Metadata> m_agent_metadata;
         std::string m_selected_robot_name;
+        bool m_is_armed;
     };
 }

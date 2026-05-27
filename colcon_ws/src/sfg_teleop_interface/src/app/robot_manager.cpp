@@ -3,6 +3,10 @@
 
 namespace sfg_teleop_interface::app
 {
+    const double max_linear_velocity = 2.8;  // in m/s
+    const double max_angular_velocity = 1.5; // in rad/s
+    const double max_stick_val_abs = 32767;
+
     RobotManager::RobotManager(rclcpp::Node *node) : m_node(node)
     {
         using namespace sfg_utils::fqn;
@@ -22,6 +26,7 @@ namespace sfg_teleop_interface::app
         }
 
         m_selected_robot_name = "";
+        m_is_armed = false;
     }
 
     void RobotManager::refresh_discovery_now()
@@ -62,8 +67,61 @@ namespace sfg_teleop_interface::app
         }
     }
 
-    void RobotManager::publish_move_command()
+    void RobotManager::publish_move_command(double leftX, double leftY, double rightX, double rightY)
     {
+        if (!m_is_armed)
+        {
+            return;
+        }
+
+        // linear mapping of stick positions onto target velocities (max stick position eql. to max velocity) //
+
+        // normalise stick positions ro range -1.0 to 1.0
+        leftX /= max_stick_val_abs;
+        leftY /= max_stick_val_abs;
+        rightX /= max_stick_val_abs;
+        rightY /= max_stick_val_abs;
+
+        // upper and lower clamping
+        if (leftX > 1.0)
+            leftX = 1.0;
+        if (leftX < -1.0)
+            leftX = -1.0;
+        if (leftY > 1.0)
+            leftY = 1.0;
+        if (leftY < -1.0)
+            leftY = -1.0;
+        if (rightX > 1.0)
+            rightX = 1.0;
+        if (rightX < -1.0)
+            rightX = -1.0;
+        if (rightY > 1.0)
+            rightY = 1.0;
+        if (rightY < -1.0)
+            rightY = -1.0;
+
+        // center sensitivity deadzone
+        if (abs(leftX) < 0.4)
+            leftX = 0.0;
+        if (abs(leftY) < 0.1)
+            leftY = 0.0;
+        if (abs(rightX) < 0.2)
+            rightX = 0.0;
+        if (abs(rightY) < 0.2)
+            rightY = 0.0;
+
+        // construct twist message and publish
+        geometry_msgs::msg::TwistStamped t_cmd;
+        t_cmd.twist.linear.x = -leftY * max_linear_velocity; // moving back and forth
+        t_cmd.twist.linear.y = -leftX * max_linear_velocity; // moving sideways
+        t_cmd.twist.linear.z = 0.0;                          // moving up and down
+
+        t_cmd.twist.angular.x = 0.0;                            // turning sideways (roll)
+        t_cmd.twist.angular.y = rightY * max_angular_velocity;  // turning up and down (pitch)
+        t_cmd.twist.angular.z = -rightX * max_angular_velocity; // turning left and right (yaw)
+        t_cmd.header.stamp = m_node->now();
+
+        m_control_pub->publish(t_cmd);
     }
 
     void RobotManager::fetch_discovery_agents_metadata()

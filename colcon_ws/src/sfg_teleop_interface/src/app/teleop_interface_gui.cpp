@@ -34,14 +34,7 @@ namespace sfg_teleop_interface::app
 
     void TeleopInterfaceGui::render_internal()
     {
-        // check for close request
-        if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_EAST))
-        {
-            SDL_Event close_event;
-            SDL_zero(close_event);
-            close_event.type = SDL_EVENT_QUIT;
-            SDL_PushEvent(&close_event);
-        }
+        this->process_input();
 
         auto &io = ImGui::GetIO();
 
@@ -54,6 +47,27 @@ namespace sfg_teleop_interface::app
         // ...
 
         ImGui::End();
+    }
+
+    void TeleopInterfaceGui::process_input()
+    {
+        // check for close request
+        if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_EAST))
+        {
+            SDL_Event close_event;
+            SDL_zero(close_event);
+            close_event.type = SDL_EVENT_QUIT;
+            SDL_PushEvent(&close_event);
+        }
+
+        // button state events
+        // ...
+
+        // sample stick positions
+        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX);
+        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY);
+        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX);
+        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY);
     }
 
     void TeleopInterfaceGui::render_overlay()

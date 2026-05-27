@@ -33,6 +33,7 @@ namespace sfg_teleop_interface::app
 
     private:
         void init_gamepad();
+        void process_input();
 
         void render_overlay();
         void render_video_frame();
