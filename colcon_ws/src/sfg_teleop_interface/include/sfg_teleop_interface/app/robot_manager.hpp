@@ -10,25 +10,32 @@
 
 namespace sfg_teleop_interface::app
 {
+    using std::placeholders::_1;
+
     class RobotManager
     {
     public:
         RobotManager(rclcpp::Node *node);
         ~RobotManager();
 
+        void refresh_discovery_now();
+
     private:
         void create_publisher_and_subscriber();
         void destroy_publisher_and_subscriber();
         void publish_move_command();
+        void fetch_discovery_agents_metadata();
+        void on_image_received(const sensor_msgs::msg::Image::ConstSharedPtr &msg);
 
     private:
         rclcpp::Node *m_node;
 
-        image_transport::Subscriber m_image_sub;
+        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_sub;
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr m_control_pub;
         rclcpp::Client<sfg_agent_msgs::srv::GetDiscoveredAgents>::SharedPtr m_discovery_service;
         rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedPtr m_trigger_action_service;
 
         std::map<std::string, sfg_agent_msgs::msg::Metadata> m_agent_metadata;
+        std::string m_selected_robot_name;
     };
 }
