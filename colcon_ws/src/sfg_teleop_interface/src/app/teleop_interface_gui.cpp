@@ -15,15 +15,7 @@ namespace sfg_teleop_interface::app
 
     TeleopInterfaceGui::TeleopInterfaceGui(rclcpp::Node *node) : m_node(node)
     {
-        using namespace sfg_utils::fqn;
-
         init_gamepad();
-
-        // create discovery service instance
-        m_discovery_service = node->create_client<sfg_agent_msgs::srv::GetDiscoveredAgents>(RosFqnBuilder().scope(Scope::Local).agent().resource(Resource::Custom, "get_discovered_agents").build());
-
-        // create pubs and subs
-        this->create_publisher_and_subscriber();
     }
 
     TeleopInterfaceGui::~TeleopInterfaceGui()
@@ -105,17 +97,5 @@ namespace sfg_teleop_interface::app
 
         RCLCPP_ERROR(this->m_node->get_logger(), "No Gamepad was found!");
         throw std::runtime_error("Failed to initialize. No Gamepad!");
-    }
-
-    void TeleopInterfaceGui::create_publisher_and_subscriber()
-    {
-    }
-
-    void TeleopInterfaceGui::destroy_publisher_and_subscriber()
-    {
-    }
-
-    void TeleopInterfaceGui::publish_move_command()
-    {
     }
 }

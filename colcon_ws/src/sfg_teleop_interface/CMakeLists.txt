@@ -44,6 +44,7 @@ set(SOURCES
 
 sfg_utils__add_component(${EXECUTABLE_NAME} "${PROJECT_NAME}::TeleopInterface"
     SOURCES
+    "src/app/robot_manager.cpp"
     "src/app/teleop_interface_gui.cpp"
     "src/teleop_interface.cpp"
     "src/teleop_interface_component.cpp"
