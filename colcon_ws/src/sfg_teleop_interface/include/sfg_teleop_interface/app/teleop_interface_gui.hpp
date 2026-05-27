@@ -4,6 +4,7 @@
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_events.h>
 #include <SDL3/SDL_joystick.h>
 
 #include "sfg_agent_msgs/srv/get_discovered_agents.hpp"

@@ -42,6 +42,15 @@ namespace sfg_teleop_interface::app
 
     void TeleopInterfaceGui::render_internal()
     {
+        // check for close request
+        if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_EAST))
+        {
+            SDL_Event close_event;
+            SDL_zero(close_event);
+            close_event.type = SDL_EVENT_QUIT;
+            SDL_PushEvent(&close_event);
+        }
+
         auto &io = ImGui::GetIO();
 
         ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
