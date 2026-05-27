@@ -94,10 +94,12 @@ namespace sfg_teleop_interface::app
 
                 // std::cout << "Opened gamepad ID " << jid << " | Name: " << (name ? name : "Unknown") << " | Type: " << type << "\n";
                 RCLCPP_INFO(this->m_node->get_logger(), "Opened gamepad ID %u | Name: %s", jid, (name ? name : "Unknown"));
+
+                return;
             }
             else
             {
-                return;
+                RCLCPP_WARN(this->m_node->get_logger(), "joystick id %u is not recognized as a gamepad", jid);
             }
         }
 
