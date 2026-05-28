@@ -34,6 +34,10 @@ namespace sfg_teleop_interface::app
         this->fetch_discovery_agents_metadata();
     }
 
+    void RobotManager::switch_to_robot(const std::string &name)
+    {
+    }
+
     const std::map<std::string, sfg_agent_msgs::msg::Metadata> &RobotManager::get_all_robot_agent_metadata() const
     {
         return this->m_agent_metadata;
@@ -51,6 +55,11 @@ namespace sfg_teleop_interface::app
     bool RobotManager::is_armed() const
     {
         return this->m_is_armed;
+    }
+
+    bool RobotManager::is_selected() const
+    {
+        return (m_selected_robot_name != ""); // empty name means no robot selected
     }
 
     void RobotManager::create_publisher_and_subscriber()

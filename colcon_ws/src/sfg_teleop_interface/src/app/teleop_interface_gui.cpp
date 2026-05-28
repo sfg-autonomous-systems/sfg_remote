@@ -13,7 +13,7 @@ namespace sfg_teleop_interface::app
                                                 ImGuiWindowFlags_NoCollapse |
                                                 ImGuiWindowFlags_NoDecoration;
 
-    TeleopInterfaceGui::TeleopInterfaceGui(rclcpp::Node *node) : m_node(node)
+    TeleopInterfaceGui::TeleopInterfaceGui(rclcpp::Node *node) : m_node(node), m_manager(node), m_show_selector_dialog(false)
     {
         init_gamepad();
     }
@@ -47,6 +47,8 @@ namespace sfg_teleop_interface::app
         // ...
 
         ImGui::End();
+
+        this->render_selector_dialog();
     }
 
     void TeleopInterfaceGui::process_input()
@@ -61,7 +63,10 @@ namespace sfg_teleop_interface::app
         }
 
         // button state events
-        // ...
+        if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_WEST))
+        {
+            m_show_selector_dialog = true;
+        }
 
         // sample stick positions
         SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX);
@@ -76,6 +81,53 @@ namespace sfg_teleop_interface::app
 
     void TeleopInterfaceGui::render_video_frame()
     {
+    }
+
+    void TeleopInterfaceGui::render_selector_dialog()
+    {
+        if (m_show_selector_dialog)
+        {
+            ImGui::OpenPopup("AgentSelectDialog");
+            m_show_selector_dialog = false;
+        }
+
+        ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+        if (ImGui::BeginPopupModal("AgentSelectDialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::TextUnformatted("Select a robot");
+            ImGui::Separator();
+
+            for (const auto &[agent_name, metadata] : m_manager.get_all_robot_agent_metadata())
+            {
+                // skip agents with invalid name
+                if (agent_name == "")
+                {
+                    continue;
+                }
+
+                if (ImGui::Button(agent_name.c_str(), ImVec2(250.0f, 0.0f)))
+                {
+                    m_manager.switch_to_robot(agent_name);
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
+            ImGui::Separator();
+            if (ImGui::Button("Cancel", ImVec2(85, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Refresh", ImVec2(85, 0)))
+            {
+                // refresh list of discovered robot agents
+                m_manager.refresh_discovery_now();
+            }
+
+            ImGui::EndPopup();
+        }
     }
 
     void TeleopInterfaceGui::init_gamepad()

@@ -19,11 +19,13 @@ namespace sfg_teleop_interface::app
         ~RobotManager();
 
         void refresh_discovery_now();
+        void switch_to_robot(const std::string &name);
 
         // getters
         const std::map<std::string, sfg_agent_msgs::msg::Metadata> &get_all_robot_agent_metadata() const;
         const sfg_agent_msgs::msg::Metadata *get_metadata_for_selected() const;
         bool is_armed() const;
+        bool is_selected() const;
 
         // control related
         void publish_move_command(double, double, double, double);

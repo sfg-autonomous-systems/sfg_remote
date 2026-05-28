@@ -8,6 +8,7 @@
 #include <SDL3/SDL_joystick.h>
 
 #include "sfg_imgui_vendor/gui_element.hpp"
+#include "sfg_teleop_interface/app/robot_manager.hpp"
 
 namespace sfg_teleop_interface::app
 {
@@ -37,9 +38,13 @@ namespace sfg_teleop_interface::app
 
         void render_overlay();
         void render_video_frame();
+        void render_selector_dialog();
 
     private:
         SDL_Gamepad *m_gamepad;
         rclcpp::Node *m_node;
+        RobotManager m_manager;
+
+        bool m_show_selector_dialog;
     };
 }
