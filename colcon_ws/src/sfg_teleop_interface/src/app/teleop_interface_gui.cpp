@@ -86,6 +86,48 @@ namespace sfg_teleop_interface::app
 
     void TeleopInterfaceGui::render_overlay()
     {
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+                                 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+                                 ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+
+        ImGui::SetNextWindowPos(ImVec2(50.0, 100.0));
+        ImGui::SetNextWindowBgAlpha(0.3f);
+        if (ImGui::Begin("Robot agent data", nullptr, flags))
+        {
+            const auto *data = m_manager.get_metadata_for_selected();
+            if (data)
+            {
+                ImGui::Text("Selected robot agent");
+                ImGui::Text("Name: %s", data->agent_name.c_str());
+                ImGui::Text("Cameras: ");
+                for (const auto &cam : data->cameras)
+                {
+                    ImGui::Text(" %s ", cam.c_str());
+                }
+                ImGui::Text("Lidars: ");
+                for (const auto &lidar : data->lidars)
+                {
+                    ImGui::Text(" %s ", lidar.c_str());
+                }
+
+                if (m_manager.is_armed())
+                {
+                    ImGui::TextColored(ImVec4(0, 255, 0, 1), "ARMED");
+                }
+                else
+                {
+                    ImGui::TextColored(ImVec4(255, 0, 0, 1), "DISARMED");
+                }
+
+                // float frametime = ((TeleopClient *)m_teleop_client_node.get())->GetVideoFrametime();
+                // ImGui::Text("Video frametime %.2f ms/frame (%.1f fps)", frametime, (1000.0f / frametime));
+            }
+            else
+            {
+                ImGui::Text("Press X to see available robots");
+            }
+            ImGui::End();
+        }
     }
 
     void TeleopInterfaceGui::render_video_frame()

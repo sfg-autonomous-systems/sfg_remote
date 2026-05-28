@@ -29,7 +29,7 @@ namespace sfg_teleop_interface::app
         bool is_selected() const;
 
         // control related
-        void publish_move_command(double, double, double, double);
+        void publish_move_command(double leftX, double leftY, double rightX, double rightY);
         void arm();
         void disarm();
 
