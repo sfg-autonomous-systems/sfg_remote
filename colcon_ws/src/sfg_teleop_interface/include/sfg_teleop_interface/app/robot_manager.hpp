@@ -20,6 +20,7 @@ namespace sfg_teleop_interface::app
 
         void refresh_discovery_now();
         void switch_to_robot(const std::string &name);
+        void detach_from_robot();
 
         // getters
         const std::map<std::string, sfg_agent_msgs::msg::Metadata> &get_all_robot_agent_metadata() const;

@@ -7,15 +7,13 @@ namespace sfg_teleop_interface::app
     const double max_angular_velocity = 1.5; // in rad/s
     const double max_stick_val_abs = 32767;
 
-    RobotManager::RobotManager(rclcpp::Node *node) : m_node(node)
+    RobotManager::RobotManager(rclcpp::Node *node) : m_node(node), m_selected_robot_name(""), m_is_armed(false)
     {
         using namespace sfg_utils::fqn;
 
         // create service instances
         m_discovery_service = m_node->create_client<sfg_agent_msgs::srv::GetDiscoveredAgents>(RosFqnBuilder().scope(Scope::Local).agent().resource(Resource::Custom, "get_discovered_agents").build());
         this->fetch_discovery_agents_metadata();
-
-        m_selected_robot_name = "";
     }
 
     RobotManager::~RobotManager()
@@ -36,6 +34,53 @@ namespace sfg_teleop_interface::app
 
     void RobotManager::switch_to_robot(const std::string &name)
     {
+        // when name actually changed, recreate subscribers and publishers for matching topic
+        if (name == m_selected_robot_name)
+        {
+            return;
+        }
+
+        auto iterator = m_agent_metadata.find(name);
+        if (iterator == m_agent_metadata.end())
+        {
+            return;
+        }
+
+        const auto &selected_agent = iterator->second;
+
+        // print some metadata for selected robot
+        RCLCPP_INFO(m_node->get_logger(), "Metadata for robot %s:", selected_agent.agent_name.c_str());
+        RCLCPP_INFO(m_node->get_logger(), "  primary camera: %s", selected_agent.cameras.at(0).c_str());
+        RCLCPP_INFO(m_node->get_logger(), "  primary lidar:  %s", selected_agent.lidars.at(0).c_str());
+
+        // disarm before switching to another
+        if (m_is_armed)
+        {
+            disarm();
+        }
+
+        // now switch over
+        m_selected_robot_name = name;
+        create_publisher_and_subscriber();
+
+        // recreate the trigger-action service client and arm the newly selected robot
+        using namespace sfg_utils::fqn;
+        m_trigger_action_service = m_node->create_client<sfg_agent_msgs::srv::TriggerAction>(
+            RosFqnBuilder().scope(Scope::Global).component(Component::LocomotionController).agent(m_selected_robot_name).resource(Resource::TriggerAction).build());
+
+        arm();
+    }
+
+    void RobotManager::detach_from_robot()
+    {
+        // disarm before detach
+        if (m_is_armed)
+        {
+            disarm();
+        }
+
+        destroy_publisher_and_subscriber();
+        m_selected_robot_name = "";
     }
 
     const std::map<std::string, sfg_agent_msgs::msg::Metadata> &RobotManager::get_all_robot_agent_metadata() const
