@@ -42,13 +42,11 @@ namespace sfg_teleop_interface::app
         ImGui::SetNextWindowSize(io.DisplaySize);
         ImGui::Begin("##main_window", nullptr, s_main_window_flags);
 
-        render_video_frame();
-        render_overlay();
-        // ...
-
         ImGui::End();
 
-        this->render_selector_dialog();
+        render_video_frame();
+        render_overlay();
+        render_selector_dialog();
     }
 
     void TeleopInterfaceGui::process_input()
@@ -68,11 +66,22 @@ namespace sfg_teleop_interface::app
             m_show_selector_dialog = true;
         }
 
-        // sample stick positions
-        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX);
-        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY);
-        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX);
-        SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY);
+        // manual dis-/arming
+        if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER))
+        {
+            m_manager.arm();
+        }
+        if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER))
+        {
+            m_manager.disarm();
+        }
+
+        // sample stick for navigation
+        m_manager.publish_move_command(
+            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX),
+            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY),
+            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX),
+            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY));
     }
 
     void TeleopInterfaceGui::render_overlay()
