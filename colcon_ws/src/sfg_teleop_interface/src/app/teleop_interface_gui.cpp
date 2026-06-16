@@ -38,13 +38,14 @@ namespace sfg_teleop_interface::app
 
         auto &io = ImGui::GetIO();
 
+        render_video_frame();
+
         ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
         ImGui::SetNextWindowSize(io.DisplaySize);
         ImGui::Begin("##main_window", nullptr, s_main_window_flags);
 
         ImGui::End();
 
-        render_video_frame();
         render_overlay();
         render_selector_dialog();
     }
@@ -132,6 +133,14 @@ namespace sfg_teleop_interface::app
 
     void TeleopInterfaceGui::render_video_frame()
     {
+        // update camera image feed if necessary
+        if (m_manager.is_new_image_available())
+        {
+            cv::Mat latest_image = m_manager.get_latest_image();
+            m_camera_viewer.update_image_data(latest_image);
+        }
+
+        m_camera_viewer.render();
     }
 
     void TeleopInterfaceGui::render_selector_dialog()

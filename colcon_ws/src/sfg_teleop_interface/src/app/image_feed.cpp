@@ -70,23 +70,25 @@ namespace sfg_teleop_interface::app
 
     void ImageFeed::render_internal()
     {
-        ImGui::Begin("Camera View");
-
         if (m_texture_id != 0)
         {
+            ImGuiIO &io = ImGui::GetIO();
+
             // Cast OpenGL texture ID (GLuint) to ImTextureID
             // ImTextureID texture_id = reinterpret_cast<ImTextureID>(static_cast<intptr_t>(m_texture_id));
             ImTextureID texture_id = (ImTextureID)(intptr_t)m_texture_id;
 
-            // Display the image
-            ImGui::Image(texture_id, ImVec2(static_cast<float>(m_buffer_width), static_cast<float>(m_buffer_height)));
+            // Display the image in the background
+            // ImGui::Image(texture_id, ImVec2(static_cast<float>(m_buffer_width), static_cast<float>(m_buffer_height)));
+            ImGui::GetBackgroundDrawList()->AddImage(
+                texture_id,
+                ImVec2(0.0f, 0.0f),
+                io.DisplaySize);
         }
         else
         {
             // draw placeholder instead
-            ImGui::Text("No stream received yet.");
+            // ImGui::Text("No stream received yet.");
         }
-
-        ImGui::End();
     }
 }
