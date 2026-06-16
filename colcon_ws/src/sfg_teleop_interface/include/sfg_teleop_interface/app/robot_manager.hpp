@@ -29,6 +29,7 @@ namespace sfg_teleop_interface::app
         const sfg_agent_msgs::msg::Metadata *get_metadata_for_selected() const;
         bool is_armed() const;
         bool is_selected() const;
+        bool is_new_image_available() const;
 
         // control related
         void publish_move_command(double leftX, double leftY, double rightX, double rightY);
@@ -52,5 +53,9 @@ namespace sfg_teleop_interface::app
         std::map<std::string, sfg_agent_msgs::msg::Metadata> m_agent_metadata;
         std::string m_selected_robot_name;
         bool m_is_armed;
+
+        std::mutex m_image_mutex;
+        cv::Mat m_pending_image_rgba;
+        bool m_new_image_available;
     };
 }

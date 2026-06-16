@@ -7,7 +7,7 @@ namespace sfg_teleop_interface::app
     const double max_angular_velocity = 1.5; // in rad/s
     const double max_stick_val_abs = 32767;
 
-    RobotManager::RobotManager(rclcpp::Node *node) : m_node(node), m_selected_robot_name(""), m_is_armed(false)
+    RobotManager::RobotManager(rclcpp::Node *node) : m_node(node), m_selected_robot_name(""), m_is_armed(false), m_new_image_available(false)
     {
         using namespace sfg_utils::fqn;
 
@@ -105,6 +105,11 @@ namespace sfg_teleop_interface::app
     bool RobotManager::is_selected() const
     {
         return (m_selected_robot_name != ""); // empty name means no robot selected
+    }
+
+    bool RobotManager::is_new_image_available() const
+    {
+        return this->m_new_image_available;
     }
 
     void RobotManager::create_publisher_and_subscriber()
@@ -340,6 +345,21 @@ namespace sfg_teleop_interface::app
         }
 
         // perform conversion into drawable image data structure
-        // ...
+        try
+        {
+            // Convert the ROS image to an OpenCV Mat in RGBA format (ideal for OpenGL/ImGui)
+            cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::RGBA8);
+
+            // Lock and copy the CPU buffer so the render thread can safely access it
+            {
+                std::lock_guard<std::mutex> lock(m_image_mutex);
+                m_pending_image_rgba = cv_ptr->image;
+                m_new_image_available = true;
+            }
+        }
+        catch (const cv_bridge::Exception &e)
+        {
+            RCLCPP_ERROR(m_node->get_logger(), "Image conversion failed! cv_bridge exception: %s", e.what());
+        }
     }
 }
