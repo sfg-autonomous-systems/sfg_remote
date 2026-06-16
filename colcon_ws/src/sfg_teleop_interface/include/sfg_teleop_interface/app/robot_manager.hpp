@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/msg/twist_stamped.hpp>
 #include <image_transport/image_transport.hpp>
 #include <memory>
+#include <mutex>
 #include <rclcpp/rclcpp.hpp>
 
 #include "sfg_agent_msgs/srv/get_discovered_agents.hpp"

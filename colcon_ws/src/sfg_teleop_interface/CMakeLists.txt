@@ -30,6 +30,7 @@ find_package(sfg_agent_msgs REQUIRED)
 find_package(sfg_utils REQUIRED)
 find_package(sfg_imgui_vendor REQUIRED)
 find_package(image_transport REQUIRED)
+find_package(cv_bridge REQUIRED)
 
 # ########################################################################################################
 # Add nodes and libraries.                                                                               #
@@ -58,6 +59,7 @@ sfg_utils__add_component(${EXECUTABLE_NAME} "${PROJECT_NAME}::TeleopInterface"
     sfg_imgui_vendor
     sfg_utils
     std_msgs
+    cv_bridge
 )
 
 # ########################################################################################################
