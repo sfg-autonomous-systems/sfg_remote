@@ -107,9 +107,16 @@ namespace sfg_teleop_interface::app
         return (m_selected_robot_name != ""); // empty name means no robot selected
     }
 
-    bool RobotManager::is_new_image_available() const
+    bool RobotManager::is_new_image_available()
     {
-        return this->m_new_image_available;
+        std::lock_guard<std::mutex> lock(m_image_mutex);
+        return m_new_image_available;
+    }
+
+    cv::Mat RobotManager::get_latest_image()
+    {
+        std::lock_guard<std::mutex> lock(m_image_mutex);
+        return m_pending_image_rgba.clone();
     }
 
     void RobotManager::create_publisher_and_subscriber()

@@ -29,7 +29,8 @@ namespace sfg_teleop_interface::app
         const sfg_agent_msgs::msg::Metadata *get_metadata_for_selected() const;
         bool is_armed() const;
         bool is_selected() const;
-        bool is_new_image_available() const;
+        bool is_new_image_available();
+        cv::Mat get_latest_image();
 
         // control related
         void publish_move_command(double leftX, double leftY, double rightX, double rightY);

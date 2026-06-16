@@ -13,7 +13,7 @@ namespace sfg_teleop_interface::app
                                                 ImGuiWindowFlags_NoCollapse |
                                                 ImGuiWindowFlags_NoDecoration;
 
-    TeleopInterfaceGui::TeleopInterfaceGui(rclcpp::Node *node) : m_node(node), m_manager(node), m_show_selector_dialog(false)
+    TeleopInterfaceGui::TeleopInterfaceGui(rclcpp::Node *node) : m_node(node), m_manager(node), m_camera_viewer(node), m_show_selector_dialog(false)
     {
         init_gamepad();
     }
