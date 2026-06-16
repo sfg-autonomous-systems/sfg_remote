@@ -116,6 +116,7 @@ namespace sfg_teleop_interface::app
     cv::Mat RobotManager::get_latest_image()
     {
         std::lock_guard<std::mutex> lock(m_image_mutex);
+        m_new_image_available = false;
         return m_pending_image_rgba.clone();
     }
 

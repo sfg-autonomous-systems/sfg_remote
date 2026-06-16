@@ -27,7 +27,7 @@ namespace sfg_teleop_interface::app
         rclcpp::Node *m_node;
 
         GLuint m_texture_id = 0;
-        int m_image_width = 0;
-        int m_image_height = 0;
+        int m_buffer_width = 0;
+        int m_buffer_height = 0;
     };
 }
