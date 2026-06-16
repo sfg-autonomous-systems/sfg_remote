@@ -17,8 +17,28 @@ namespace sfg_teleop_interface::app
 
     void ImageFeed::init_texture()
     {
-        // preallocate 2D texture
+        // 1. Generate the texture handle
         glGenTextures(1, &m_texture_id);
+        glBindTexture(GL_TEXTURE_2D, m_texture_id);
+
+        // 2. Setup filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        // 3. Define a single grey pixel (RGBA: 128, 128, 128, 255)
+        // You can adjust these values to make the grey lighter or darker
+        GLubyte grey_pixel[] = {128, 128, 128, 255};
+
+        // 4. Upload the 1x1 pixel to the GPU
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, grey_pixel);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // 5. Initialize dimensions so our render loop knows the initial size
+        m_buffer_width = 1;
+        m_buffer_height = 1;
     }
 
     void ImageFeed::update_image_data(const cv::Mat &image)
