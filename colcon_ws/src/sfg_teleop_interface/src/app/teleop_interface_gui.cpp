@@ -199,10 +199,10 @@ namespace sfg_teleop_interface::app
                 }
 
                 const char *name = SDL_GetGamepadName(m_gamepad);
-                SDL_GamepadType type = SDL_GetGamepadType(m_gamepad);
-
-                // std::cout << "Opened gamepad ID " << jid << " | Name: " << (name ? name : "Unknown") << " | Type: " << type << "\n";
                 RCLCPP_INFO(this->m_node->get_logger(), "Opened gamepad ID %u | Name: %s", jid, (name ? name : "Unknown"));
+
+                // SDL_GamepadType type = SDL_GetGamepadType(m_gamepad);
+                // std::cout << "Opened gamepad ID " << jid << " | Name: " << (name ? name : "Unknown") << " | Type: " << type << "\n";
 
                 // Enable gamepad support for ImGUI
                 auto &io = ImGui::GetIO();
