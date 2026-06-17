@@ -18,13 +18,15 @@ namespace sfg_teleop_interface::app
 
     RobotManager::~RobotManager()
     {
+        if (m_selected_robot_name != "")
+        {
+            detach_from_robot();
+        }
+
         if (m_node)
         {
             m_node = nullptr;
         }
-
-        m_selected_robot_name = "";
-        m_is_armed = false;
     }
 
     void RobotManager::refresh_discovery_now()
