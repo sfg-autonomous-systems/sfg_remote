@@ -273,7 +273,7 @@ namespace sfg_teleop_interface::app
             return;
         }
 
-        RCLCPP_INFO(m_node->get_logger(), "published move cmd: leftX=%f leftY=%f rightX=%f rightY=%f", leftX, leftY, rightX, rightY);
+        // RCLCPP_INFO(m_node->get_logger(), "published move cmd: leftX=%f leftY=%f rightX=%f rightY=%f", leftX, leftY, rightX, rightY);
 
         // linear mapping of stick positions onto target velocities (max stick position eql. to max velocity) //
 
