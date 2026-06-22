@@ -4,12 +4,12 @@
 
 #include "sfg_imgui_vendor/main_window.hpp"
 
-namespace sfg_teleop_interface
+namespace sfg_universal_remote_control
 {
-    class TeleopInterface : public rclcpp::Node
+    class UniversalRemoteControl : public rclcpp::Node
     {
     public:
-        TeleopInterface(const rclcpp::NodeOptions &options);
+        UniversalRemoteControl(const rclcpp::NodeOptions &options);
 
     private:
         std::unique_ptr<sfg_imgui_vendor::MainWindow> m_main_window;

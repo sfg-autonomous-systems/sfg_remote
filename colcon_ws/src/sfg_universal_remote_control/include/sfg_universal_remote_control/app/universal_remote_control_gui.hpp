@@ -1,0 +1,59 @@
+#pragma once
+
+#include <imgui/imgui.h>
+#include <memory>
+#include <rclcpp/rclcpp.hpp>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_joystick.h>
+
+#include "sfg_imgui_vendor/gui_element.hpp"
+#include "sfg_universal_remote_control/app/agent_manager.hpp"
+#include "sfg_universal_remote_control/app/image_feed.hpp"
+
+namespace sfg_universal_remote_control::app
+{
+    struct JoystickIdDeleter
+    {
+        void operator()(SDL_JoystickID *ptr) const noexcept
+        {
+            if (ptr)
+            {
+                SDL_free(ptr);
+            }
+        }
+    };
+
+    using JoystickIdPtr = std::unique_ptr<SDL_JoystickID, JoystickIdDeleter>;
+
+    const auto min_cmd_period = std::chrono::milliseconds(25);
+
+    class UniversalRemoteControlGui : public sfg_imgui_vendor::GuiElement
+    {
+    public:
+        UniversalRemoteControlGui(rclcpp::Node *node);
+        UniversalRemoteControlGui(const UniversalRemoteControlGui &) = delete;
+        UniversalRemoteControlGui &operator=(const UniversalRemoteControlGui &) = delete;
+        UniversalRemoteControlGui(UniversalRemoteControlGui &&) = delete;
+        UniversalRemoteControlGui &operator=(UniversalRemoteControlGui &&) = delete;
+        ~UniversalRemoteControlGui();
+
+    protected:
+        void render_internal() override;
+
+    private:
+        void init_gamepad();
+        void process_input();
+
+        void render_overlay();
+        void render_video_frame();
+        void render_selector_dialog();
+
+        SDL_Gamepad *m_gamepad;
+        rclcpp::Node *m_node;
+        AgentManager m_manager;
+        ImageFeed m_camera_viewer;
+
+        bool m_show_selector_dialog;
+    };
+}

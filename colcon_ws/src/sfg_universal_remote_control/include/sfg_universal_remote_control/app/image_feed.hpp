@@ -1,13 +1,14 @@
 #pragma once
 
-#include "sfg_imgui_vendor/gui_element.hpp"
 #include <cv_bridge/cv_bridge.h>
 #include <GL/gl.h>
 #include <imgui/imgui.h>
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 
-namespace sfg_teleop_interface::app
+#include "sfg_imgui_vendor/gui_element.hpp"
+
+namespace sfg_universal_remote_control::app
 {
     class ImageFeed : public sfg_imgui_vendor::GuiElement
     {
@@ -19,9 +20,6 @@ namespace sfg_teleop_interface::app
 
     protected:
         void render_internal() override;
-
-    private:
-        void init_texture();
 
     private:
         rclcpp::Node *m_node;

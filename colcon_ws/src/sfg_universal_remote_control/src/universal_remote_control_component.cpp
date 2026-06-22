@@ -1,0 +1,5 @@
+#include <rclcpp_components/register_node_macro.hpp>
+
+#include "sfg_universal_remote_control/universal_remote_control.hpp"
+
+RCLCPP_COMPONENTS_REGISTER_NODE(sfg_universal_remote_control::UniversalRemoteControl)

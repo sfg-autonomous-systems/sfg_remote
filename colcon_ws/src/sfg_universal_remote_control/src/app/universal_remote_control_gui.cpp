@@ -1,9 +1,8 @@
-#include "sfg_teleop_interface/app/teleop_interface_gui.hpp"
+#include "sfg_universal_remote_control/app/universal_remote_control_gui.hpp"
+
 #include "sfg_utils/fqn/ros_fqn_builder.hpp"
 
-#include <iostream>
-
-namespace sfg_teleop_interface::app
+namespace sfg_universal_remote_control::app
 {
     static constexpr auto s_main_window_flags = ImGuiWindowFlags_NoResize |
                                                 ImGuiWindowFlags_NoBackground |
@@ -13,12 +12,16 @@ namespace sfg_teleop_interface::app
                                                 ImGuiWindowFlags_NoCollapse |
                                                 ImGuiWindowFlags_NoDecoration;
 
-    TeleopInterfaceGui::TeleopInterfaceGui(rclcpp::Node *node) : m_node(node), m_manager(node), m_camera_viewer(node), m_show_selector_dialog(false)
+    UniversalRemoteControlGui::UniversalRemoteControlGui(rclcpp::Node *node)
+        : m_node(node),
+          m_manager(node),
+          m_camera_viewer(node),
+          m_show_selector_dialog(false)
     {
         init_gamepad();
     }
 
-    TeleopInterfaceGui::~TeleopInterfaceGui()
+    UniversalRemoteControlGui::~UniversalRemoteControlGui()
     {
         if (m_gamepad)
         {
@@ -32,9 +35,9 @@ namespace sfg_teleop_interface::app
         }
     }
 
-    void TeleopInterfaceGui::render_internal()
+    void UniversalRemoteControlGui::render_internal()
     {
-        this->process_input();
+        process_input();
 
         auto &io = ImGui::GetIO();
 
@@ -50,24 +53,25 @@ namespace sfg_teleop_interface::app
         render_selector_dialog();
     }
 
-    void TeleopInterfaceGui::process_input()
+    void UniversalRemoteControlGui::process_input()
     {
-        // check for close request
+        // Check for close request.
         if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_EAST))
         {
             SDL_Event close_event;
             SDL_zero(close_event);
             close_event.type = SDL_EVENT_QUIT;
             SDL_PushEvent(&close_event);
+            rclcpp::shutdown();
         }
 
-        // button state events
+        // Button state events.
         if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_WEST))
         {
             m_show_selector_dialog = true;
         }
 
-        // manual dis-/arming
+        // Manual dis-/arming.
         if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER))
         {
             m_manager.arm();
@@ -77,22 +81,22 @@ namespace sfg_teleop_interface::app
             m_manager.disarm();
         }
 
-        // sample stick for navigation
-        static int64_t last_cmd_send = 0;
-        auto current_time = now_ms();
-        if (current_time - last_cmd_send > min_cmd_period)
+        // Sample stick for navigation.
+        static auto last_cmd_send = rclcpp::Time(0, 0, m_node->get_clock()->get_clock_type());
+        auto current_time = m_node->now();
+
+        if ((current_time - last_cmd_send) > min_cmd_period)
         {
             m_manager.publish_move_command(
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX),
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY),
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX),
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY));
-
             last_cmd_send = current_time;
         }
     }
 
-    void TeleopInterfaceGui::render_overlay()
+    void UniversalRemoteControlGui::render_overlay()
     {
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
                                  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
@@ -100,19 +104,23 @@ namespace sfg_teleop_interface::app
 
         ImGui::SetNextWindowPos(ImVec2(50.0, 100.0));
         ImGui::SetNextWindowBgAlpha(0.3f);
-        if (ImGui::Begin("Robot agent data", nullptr, flags))
+        if (ImGui::Begin("Agent data", nullptr, flags))
         {
             const auto *data = m_manager.get_metadata_for_selected();
+
             if (data)
             {
-                ImGui::Text("Selected robot agent");
+                ImGui::Text("Selected agent");
                 ImGui::Text("Name: %s", data->agent_name.c_str());
                 ImGui::Text("Cameras: ");
+
                 for (const auto &cam : data->cameras)
                 {
                     ImGui::Text(" %s ", cam.c_str());
                 }
+
                 ImGui::Text("Lidars: ");
+
                 for (const auto &lidar : data->lidars)
                 {
                     ImGui::Text(" %s ", lidar.c_str());
@@ -126,21 +134,18 @@ namespace sfg_teleop_interface::app
                 {
                     ImGui::TextColored(ImVec4(255, 0, 0, 1), "DISARMED");
                 }
-
-                // float frametime = ((TeleopClient *)m_teleop_client_node.get())->GetVideoFrametime();
-                // ImGui::Text("Video frametime %.2f ms/frame (%.1f fps)", frametime, (1000.0f / frametime));
             }
             else
             {
-                ImGui::Text("Press X to see available robots");
+                ImGui::Text("Press X to see available agents");
             }
             ImGui::End();
         }
     }
 
-    void TeleopInterfaceGui::render_video_frame()
+    void UniversalRemoteControlGui::render_video_frame()
     {
-        // update camera image feed if necessary
+        // Update camera image feed if necessary.
         if (m_manager.is_new_image_available())
         {
             cv::Mat latest_image = m_manager.get_latest_image();
@@ -150,7 +155,7 @@ namespace sfg_teleop_interface::app
         m_camera_viewer.render();
     }
 
-    void TeleopInterfaceGui::render_selector_dialog()
+    void UniversalRemoteControlGui::render_selector_dialog()
     {
         if (m_show_selector_dialog)
         {
@@ -163,12 +168,12 @@ namespace sfg_teleop_interface::app
 
         if (ImGui::BeginPopupModal("AgentSelectDialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            ImGui::TextUnformatted("Select a robot");
+            ImGui::TextUnformatted("Select an agent");
             ImGui::Separator();
 
-            for (const auto &[agent_name, metadata] : m_manager.get_all_robot_agent_metadata())
+            for (const auto &[agent_name, metadata] : m_manager.get_all_agent_metadata())
             {
-                // skip agents with invalid name
+                // Skip agents with invalid name.
                 if (agent_name == "")
                 {
                     continue;
@@ -176,28 +181,29 @@ namespace sfg_teleop_interface::app
 
                 if (ImGui::Button(agent_name.c_str(), ImVec2(250.0f, 0.0f)))
                 {
-                    m_manager.switch_to_robot(agent_name);
+                    m_manager.switch_to_agent(agent_name);
                     ImGui::CloseCurrentPopup();
                 }
             }
 
             ImGui::Separator();
+
             if (ImGui::Button("Cancel", ImVec2(85, 0)))
             {
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
+
             if (ImGui::Button("Refresh", ImVec2(85, 0)))
             {
-                // refresh list of discovered robot agents
+                // Refresh list of discovered agents.
                 m_manager.refresh_discovery_now();
             }
-
             ImGui::EndPopup();
         }
     }
 
-    void TeleopInterfaceGui::init_gamepad()
+    void UniversalRemoteControlGui::init_gamepad()
     {
         int numJoysticks = 0;
         JoystickIdPtr joystickIdList(SDL_GetJoysticks(&numJoysticks));
@@ -205,22 +211,21 @@ namespace sfg_teleop_interface::app
         for (int i = 0; i < numJoysticks; i++)
         {
             SDL_JoystickID jid = joystickIdList.get()[i];
+
             if (SDL_IsGamepad(jid))
             {
                 m_gamepad = SDL_OpenGamepad(jid);
+
                 if (!m_gamepad)
                 {
-                    RCLCPP_WARN(this->m_node->get_logger(), "Could not open gamepad %u: %s", jid, SDL_GetError());
+                    RCLCPP_WARN(m_node->get_logger(), "Could not open gamepad %u: %s", jid, SDL_GetError());
                     continue;
                 }
 
                 const char *name = SDL_GetGamepadName(m_gamepad);
-                RCLCPP_INFO(this->m_node->get_logger(), "Opened gamepad ID %u | Name: %s", jid, (name ? name : "Unknown"));
+                RCLCPP_INFO(m_node->get_logger(), "Opened gamepad ID %u | Name: %s", jid, (name ? name : "Unknown"));
 
-                // SDL_GamepadType type = SDL_GetGamepadType(m_gamepad);
-                // std::cout << "Opened gamepad ID " << jid << " | Name: " << (name ? name : "Unknown") << " | Type: " << type << "\n";
-
-                // Enable gamepad support for ImGUI
+                // Enable gamepad support for ImGUI.
                 auto &io = ImGui::GetIO();
                 io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
                 io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -229,11 +234,11 @@ namespace sfg_teleop_interface::app
             }
             else
             {
-                RCLCPP_WARN(this->m_node->get_logger(), "joystick id %u is not recognized as a gamepad", jid);
+                RCLCPP_WARN(m_node->get_logger(), "joystick id %u is not recognized as a gamepad", jid);
             }
         }
 
-        RCLCPP_ERROR(this->m_node->get_logger(), "No Gamepad was found!");
+        RCLCPP_ERROR(m_node->get_logger(), "No Gamepad was found!");
         throw std::runtime_error("Failed to initialize. No Gamepad!");
     }
 }
