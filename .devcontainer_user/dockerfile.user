@@ -1,8 +1,8 @@
-FROM sfg-agent-devcontainer AS sfg-sfg-universal-remote-control
+FROM sfg-agent-devcontainer AS sfg-universal-remote-control
 
 WORKDIR ${HOME}/dependencies
 
-# Install SDL dependencies and developer packages
+# Install SDL dependencies and developer packages.
 RUN sudo apt-get update && \
     sudo apt-get install -y --no-install-recommends \
         build-essential \
@@ -44,27 +44,24 @@ RUN sudo apt-get update && \
         libgtk-3-dev \
         mesa-utils \
         vulkan-tools && \
-    sudo apt-get -y autoremove && \
-    sudo apt-get -y clean && \
-    sudo rm -rf "/var/cache/apt" && \
-    sudo rm -rf "/var/lib/apt/lists/"*
+    sudo apt -y autoremove && sudo apt clean && sudo rm -rf "/var/lib/apt/lists/"*
 
-# Build SDL3 from source and install
+# Build SDL3 from source and install.
 RUN git clone -b "release-3.4.0" --depth 1 "https://github.com/libsdl-org/SDL" && \
     cmake -S "SDL" -B "SDL/build" \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST=OFF && \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DSDL_SHARED=ON \
+        -DSDL_STATIC=OFF \
+        -DSDL_TEST=OFF && \
     cmake --build "SDL/build" --parallel && \
     sudo cmake --install "SDL/build" && sudo ldconfig
 
-# Delete build files
 RUN sudo rm -rf "${HOME}/dependencies"
 
 WORKDIR ${WORKSPACE_DIRECTORY}
 
 CMD "${REPOSITORY_DIRECTORY}/.devcontainer/scripts/post_start_command" && \
     source "/opt/ros/${ROS_DISTRO}/setup.bash" && \
-    sleep infinity
-#   cd "${REPOSITORY_DIRECTORY}/colcon_ws" && \
-#   source "install/setup.bash" && \
-#   ros2 launch sfg_remote_bringup "bringup.launch.py"
+    cd "${REPOSITORY_DIRECTORY}/colcon_ws" && \
+    source "install/setup.bash" && \
+    ros2 launch sfg_universal_remote_control_bringup "bringup.launch.py"

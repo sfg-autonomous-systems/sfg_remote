@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+sfg_universal_remote_control__launch_universal_remote_control() {
+    local SCRIPT_DIR
+    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>"/dev/null" && pwd)"
+    cd "${SCRIPT_DIR}/.."
+
+    local COMPOSE_FILE="compose.user.yaml"
+
+    xhost +local:
+    docker compose -f "${COMPOSE_FILE}" down
+    "${SCRIPT_DIR}/../../.devcontainer/scripts/initialize_command" LOCAL_WORKSPACE_DIRECTORY="$(realpath "${SCRIPT_DIR}/../..")" CONTAINER_WORKSPACE_DIRECTORY="/workspace" <"/dev/null"
+    docker compose -f "${COMPOSE_FILE}" up --abort-on-container-exit
+    docker compose -f "${COMPOSE_FILE}" down
+    exit
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    set -e
+    sfg_universal_remote_control__launch_universal_remote_control "${@}"
+fi

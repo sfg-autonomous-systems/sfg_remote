@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Universal Remote Control
+Exec=${CMD}
+Icon=${ICON_FILEPATH}
+Terminal=true
+Categories=Development;
