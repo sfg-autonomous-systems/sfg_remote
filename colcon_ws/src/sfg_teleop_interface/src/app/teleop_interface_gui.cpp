@@ -78,11 +78,18 @@ namespace sfg_teleop_interface::app
         }
 
         // sample stick for navigation
-        m_manager.publish_move_command(
-            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX),
-            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY),
-            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX),
-            SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY));
+        static int64_t last_cmd_send = 0;
+        auto current_time = now_ms();
+        if (current_time - last_cmd_send > min_cmd_period)
+        {
+            m_manager.publish_move_command(
+                SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX),
+                SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY),
+                SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX),
+                SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY));
+
+            last_cmd_send = current_time;
+        }
     }
 
     void TeleopInterfaceGui::render_overlay()

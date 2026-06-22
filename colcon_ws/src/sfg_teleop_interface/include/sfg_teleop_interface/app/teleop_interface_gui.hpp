@@ -10,6 +10,7 @@
 #include "sfg_imgui_vendor/gui_element.hpp"
 #include "sfg_teleop_interface/app/image_feed.hpp"
 #include "sfg_teleop_interface/app/robot_manager.hpp"
+#include "sfg_teleop_interface/app/utils.hpp"
 
 namespace sfg_teleop_interface::app
 {
@@ -23,6 +24,8 @@ namespace sfg_teleop_interface::app
     };
 
     using JoystickIdPtr = std::unique_ptr<SDL_JoystickID, JoystickIdDel>;
+
+    const int64_t min_cmd_period = 25;
 
     class TeleopInterfaceGui : public sfg_imgui_vendor::GuiElement
     {
