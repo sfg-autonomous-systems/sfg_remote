@@ -44,7 +44,7 @@ sfg_universal_remote_control__configure_desktop_shortcut() {
         sfg_bash_utils__print_plain "Creating desktop shortcut..."
         local DESKTOP_TEMPLATE="${SCRIPT_DIR}/../config/universal_remote_control.desktop.template"
         local CMD="${SCRIPT_DIR}/launch_universal_remote_control"
-        local ICON_FILEPATH="${SCRIPT_DIR}/../assets/icon.png"
+        local ICON_FILEPATH="${SCRIPT_DIR}/../assets/icon.svg"
 
         # shellcheck disable=SC2016
         CMD="${CMD}" ICON_FILEPATH="${ICON_FILEPATH}" envsubst '${CMD} ${ICON_FILEPATH}' <"${DESKTOP_TEMPLATE}" >"${desktop_filepath}"
