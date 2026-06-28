@@ -13,20 +13,6 @@
 
 namespace sfg_universal_remote_control::app
 {
-    struct JoystickIdDeleter
-    {
-        void operator()(SDL_JoystickID *ptr) const noexcept
-        {
-            if (ptr)
-            {
-                SDL_free(ptr);
-            }
-        }
-    };
-
-    using JoystickIdPtr = std::unique_ptr<SDL_JoystickID, JoystickIdDeleter>;
-
-    const auto min_cmd_period = std::chrono::milliseconds(25);
 
     class UniversalRemoteControlGui : public sfg_imgui_vendor::GuiElement
     {
@@ -42,7 +28,20 @@ namespace sfg_universal_remote_control::app
         void render_internal() override;
 
     private:
-        void init_gamepad();
+        struct JoystickIdDeleter
+        {
+            void operator()(SDL_JoystickID *ptr) const noexcept
+            {
+                if (ptr)
+                {
+                    SDL_free(ptr);
+                }
+            }
+        };
+
+        using JoystickIdPtr = std::unique_ptr<SDL_JoystickID, JoystickIdDeleter>;
+
+        void initialize_gamepad();
         void process_input();
 
         void render_overlay();
@@ -52,8 +51,9 @@ namespace sfg_universal_remote_control::app
         SDL_Gamepad *m_gamepad;
         rclcpp::Node *m_node;
         AgentManager m_manager;
-        ImageFeed m_camera_viewer;
+        ImageFeed m_image_feed;
 
-        bool m_show_selector_dialog;
+        bool m_show_selector_dialog = false;
+        rclcpp::Time m_last_cmd_time;
     };
 }

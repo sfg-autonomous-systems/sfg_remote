@@ -8,17 +8,17 @@ namespace sfg_universal_remote_control::app
 
     ImageFeed::~ImageFeed()
     {
-        if (m_node)
+        if (m_texture_id != 0)
         {
-            m_node = nullptr;
+            glDeleteTextures(1, &m_texture_id);
         }
     }
 
     void ImageFeed::update_image_data(const cv::Mat &image)
     {
-        // retrieve actual size of updated image
-        int image_width = image.cols;
-        int image_height = image.rows;
+        // Retrieve actual size of updated image.
+        auto image_width = image.cols;
+        auto image_height = image.rows;
 
         if (m_texture_id == 0)
         {
@@ -27,16 +27,16 @@ namespace sfg_universal_remote_control::app
 
         glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-        // only recreate texture buffer when image dimension changes
+        // Only recreate texture buffer when image dimension changes.
         if (image_width != m_buffer_width || image_height != m_buffer_height)
         {
-            // Set basic texture parameters
+            // Set basic texture parameters.
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            // upload image data into texture buffer on the GPU
+            // Upload image data into texture buffer on the GPU.
             glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
@@ -47,7 +47,7 @@ namespace sfg_universal_remote_control::app
                 GL_RGBA,
                 GL_UNSIGNED_BYTE, image.data);
 
-            // remember dimension of allocated buffer
+            // Remember dimension of allocated buffer.
             m_buffer_width = image_width;
             m_buffer_height = image_height;
 
@@ -55,7 +55,7 @@ namespace sfg_universal_remote_control::app
         }
         else
         {
-            // Just overwrite the existing GPU buffer (much faster)
+            // Just overwrite the existing GPU buffer (much faster).
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image_width, image_height, GL_RGBA, GL_UNSIGNED_BYTE, image.data);
         }
 
@@ -69,14 +69,10 @@ namespace sfg_universal_remote_control::app
             return;
         }
 
-        ImGuiIO &io = ImGui::GetIO();
+        auto &io = ImGui::GetIO();
+        auto texture_id = static_cast<ImTextureID>(m_texture_id);
 
-        // Cast OpenGL texture ID (GLuint) to ImTextureID
-        // ImTextureID texture_id = reinterpret_cast<ImTextureID>(static_cast<intptr_t>(m_texture_id));
-        ImTextureID texture_id = (ImTextureID)(intptr_t)m_texture_id;
-
-        // Display the image in the background
-        // ImGui::Image(texture_id, ImVec2(static_cast<float>(m_buffer_width), static_cast<float>(m_buffer_height)));
+        // Display the image in the background.
         ImGui::GetBackgroundDrawList()->AddImage(
             texture_id,
             ImVec2(0.0f, 0.0f),

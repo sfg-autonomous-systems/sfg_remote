@@ -3,8 +3,8 @@
 <package format="3">
   <name>sfg_universal_remote_control_bringup</name>
   <version>0.0.0</version>
-  <description>The Universal Remote Control package responsible for launching the entire robot
-    software stack.</description>
+  <description>The package responsible for launching the entire Universal Remote Control software
+    stack.</description>
   <maintainer email="elgeit00@hs-esslingen.de">Elias Geiger</maintainer>
   <license>MIT</license>
 

@@ -4,21 +4,13 @@
 
 namespace sfg_universal_remote_control::app
 {
-    static constexpr auto s_main_window_flags = ImGuiWindowFlags_NoResize |
-                                                ImGuiWindowFlags_NoBackground |
-                                                ImGuiWindowFlags_NoSavedSettings |
-                                                ImGuiWindowFlags_NoScrollbar |
-                                                ImGuiWindowFlags_NoScrollWithMouse |
-                                                ImGuiWindowFlags_NoCollapse |
-                                                ImGuiWindowFlags_NoDecoration;
-
     UniversalRemoteControlGui::UniversalRemoteControlGui(rclcpp::Node *node)
         : m_node(node),
           m_manager(node),
-          m_camera_viewer(node),
-          m_show_selector_dialog(false)
+          m_image_feed(node),
+          m_last_cmd_time(0, 0, m_node->get_clock()->get_clock_type())
     {
-        init_gamepad();
+        initialize_gamepad();
     }
 
     UniversalRemoteControlGui::~UniversalRemoteControlGui()
@@ -28,25 +20,26 @@ namespace sfg_universal_remote_control::app
             SDL_CloseGamepad(m_gamepad);
             m_gamepad = nullptr;
         }
-
-        if (m_node)
-        {
-            m_node = nullptr;
-        }
     }
 
     void UniversalRemoteControlGui::render_internal()
     {
+        constexpr auto main_window_flags =
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoBackground |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoScrollWithMouse |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoDecoration;
+
         process_input();
-
         auto &io = ImGui::GetIO();
-
         render_video_frame();
 
         ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
         ImGui::SetNextWindowSize(io.DisplaySize);
-        ImGui::Begin("##main_window", nullptr, s_main_window_flags);
-
+        ImGui::Begin("##main_window", nullptr, main_window_flags);
         ImGui::End();
 
         render_overlay();
@@ -71,42 +64,46 @@ namespace sfg_universal_remote_control::app
             m_show_selector_dialog = true;
         }
 
-        // Manual dis-/arming.
+        // Manual arming.
         if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER))
         {
             m_manager.arm();
         }
+
+        // Manual disarming.
         if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER))
         {
             m_manager.disarm();
         }
 
         // Sample stick for navigation.
-        static auto last_cmd_send = rclcpp::Time(0, 0, m_node->get_clock()->get_clock_type());
-        auto current_time = m_node->now();
+        constexpr auto min_cmd_period = std::chrono::milliseconds(25);
+        auto current_cmd_time = m_node->now();
 
-        if ((current_time - last_cmd_send) > min_cmd_period)
+        if ((current_cmd_time - m_last_cmd_time) > min_cmd_period)
         {
-            m_manager.publish_move_command(
+            m_manager.publish_cmd_vel(
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX),
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY),
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTX),
                 SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHTY));
-            last_cmd_send = current_time;
+            m_last_cmd_time = current_cmd_time;
         }
     }
 
     void UniversalRemoteControlGui::render_overlay()
     {
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-                                 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
-                                 ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+        ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+            ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
 
         ImGui::SetNextWindowPos(ImVec2(50.0, 100.0));
         ImGui::SetNextWindowBgAlpha(0.3f);
+
         if (ImGui::Begin("Agent data", nullptr, flags))
         {
-            const auto *data = m_manager.get_metadata_for_selected();
+            const auto data = m_manager.get_metadata_for_selected();
 
             if (data)
             {
@@ -114,9 +111,9 @@ namespace sfg_universal_remote_control::app
                 ImGui::Text("Name: %s", data->agent_name.c_str());
                 ImGui::Text("Cameras: ");
 
-                for (const auto &cam : data->cameras)
+                for (const auto &camera : data->cameras)
                 {
-                    ImGui::Text(" %s ", cam.c_str());
+                    ImGui::Text(" %s ", camera.c_str());
                 }
 
                 ImGui::Text("Lidars: ");
@@ -148,11 +145,11 @@ namespace sfg_universal_remote_control::app
         // Update camera image feed if necessary.
         if (m_manager.is_new_image_available())
         {
-            cv::Mat latest_image = m_manager.get_latest_image();
-            m_camera_viewer.update_image_data(latest_image);
+            cv::Mat latest_image = m_manager.get_image();
+            m_image_feed.update_image_data(latest_image);
         }
 
-        m_camera_viewer.render();
+        m_image_feed.render();
     }
 
     void UniversalRemoteControlGui::render_selector_dialog()
@@ -163,7 +160,7 @@ namespace sfg_universal_remote_control::app
             m_show_selector_dialog = false;
         }
 
-        ImGuiViewport *viewport = ImGui::GetMainViewport();
+        auto viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
         if (ImGui::BeginPopupModal("AgentSelectDialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
@@ -171,10 +168,10 @@ namespace sfg_universal_remote_control::app
             ImGui::TextUnformatted("Select an agent");
             ImGui::Separator();
 
-            for (const auto &[agent_name, metadata] : m_manager.get_all_agent_metadata())
+            for (auto [agent_name, metadata] : m_manager.get_all_agents())
             {
                 // Skip agents with invalid name.
-                if (agent_name == "")
+                if (agent_name.empty())
                 {
                     continue;
                 }
@@ -197,33 +194,33 @@ namespace sfg_universal_remote_control::app
             if (ImGui::Button("Refresh", ImVec2(85, 0)))
             {
                 // Refresh list of discovered agents.
-                m_manager.refresh_discovery_now();
+                m_manager.refresh_discovered_agents();
             }
             ImGui::EndPopup();
         }
     }
 
-    void UniversalRemoteControlGui::init_gamepad()
+    void UniversalRemoteControlGui::initialize_gamepad()
     {
-        int numJoysticks = 0;
-        JoystickIdPtr joystickIdList(SDL_GetJoysticks(&numJoysticks));
+        auto joystick_count = 0;
+        JoystickIdPtr joystick_id_list(SDL_GetJoysticks(&joystick_count));
 
-        for (int i = 0; i < numJoysticks; i++)
+        for (auto index = 0; index < joystick_count; index++)
         {
-            SDL_JoystickID jid = joystickIdList.get()[i];
+            SDL_JoystickID joystick_id = joystick_id_list.get()[index];
 
-            if (SDL_IsGamepad(jid))
+            if (SDL_IsGamepad(joystick_id))
             {
-                m_gamepad = SDL_OpenGamepad(jid);
+                m_gamepad = SDL_OpenGamepad(joystick_id);
 
                 if (!m_gamepad)
                 {
-                    RCLCPP_WARN(m_node->get_logger(), "Could not open gamepad %u: %s", jid, SDL_GetError());
+                    RCLCPP_WARN(m_node->get_logger(), "Could not open gamepad %u: %s", joystick_id, SDL_GetError());
                     continue;
                 }
 
-                const char *name = SDL_GetGamepadName(m_gamepad);
-                RCLCPP_INFO(m_node->get_logger(), "Opened gamepad ID %u | Name: %s", jid, (name ? name : "Unknown"));
+                auto name = SDL_GetGamepadName(m_gamepad);
+                RCLCPP_INFO(m_node->get_logger(), "Opened gamepad ID %u | Name: %s", joystick_id, (name ? name : "Unknown"));
 
                 // Enable gamepad support for ImGUI.
                 auto &io = ImGui::GetIO();
@@ -234,7 +231,7 @@ namespace sfg_universal_remote_control::app
             }
             else
             {
-                RCLCPP_WARN(m_node->get_logger(), "joystick id %u is not recognized as a gamepad", jid);
+                RCLCPP_WARN(m_node->get_logger(), "joystick id %u is not recognized as a gamepad", joystick_id);
             }
         }
 

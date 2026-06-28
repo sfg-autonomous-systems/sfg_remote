@@ -14,6 +14,10 @@ namespace sfg_universal_remote_control::app
     {
     public:
         ImageFeed(rclcpp::Node *node);
+        ImageFeed(const ImageFeed &) = delete;
+        ImageFeed &operator=(const ImageFeed &) = delete;
+        ImageFeed(ImageFeed &&) = delete;
+        ImageFeed &operator=(ImageFeed &&) = delete;
         ~ImageFeed();
 
         void update_image_data(const cv::Mat &image);
@@ -25,7 +29,7 @@ namespace sfg_universal_remote_control::app
         rclcpp::Node *m_node;
 
         GLuint m_texture_id = 0;
-        int m_buffer_width = 0;
-        int m_buffer_height = 0;
+        std::int32_t m_buffer_width = 0;
+        std::int32_t m_buffer_height = 0;
     };
 }
