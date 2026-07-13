@@ -1,4 +1,4 @@
-# Universal Remote Control
+# SFG Universal Remote Control
 
 ## [Steam Deck](https://www.steamdeck.com/en/oled) Setup (Bazzite DX)
 1. [Download](https://download.bazzite.gg/bazzite-deck-stable-live-amd64.iso) and [install](https://docs.bazzite.gg/General/Installation_Guide/) Bazzite for Steam Deck (KDE Desktop). During installation, configure:
