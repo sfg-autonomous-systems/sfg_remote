@@ -10,8 +10,13 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rclcpp_components</exec_depend>
+  <exec_depend>rospkg</exec_depend>
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>sfg_agent</exec_depend>
+  <exec_depend>sfg_universal_remote_control</exec_depend>
   <exec_depend>sfg_utils</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 #include <GL/gl.h>
 #include <imgui/imgui.h>
 #include <memory>

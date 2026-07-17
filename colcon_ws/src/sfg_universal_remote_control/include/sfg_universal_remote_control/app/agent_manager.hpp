@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>
 #include <image_transport/image_transport.hpp>
 #include <memory>
