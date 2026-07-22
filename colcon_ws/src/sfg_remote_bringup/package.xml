@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>sfg_universal_remote_control_bringup</name>
+  <name>sfg_remote_bringup</name>
   <version>0.0.0</version>
-  <description>The package responsible for launching the entire Universal Remote Control software
-    stack.</description>
+  <description>The package responsible for launching the entire Remote software stack.</description>
   <maintainer email="elgeit00@hs-esslingen.de">Elias Geiger</maintainer>
   <license>MIT</license>
 
@@ -12,6 +11,7 @@
 
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>sfg_agent</exec_depend>
+  <exec_depend>sfg_remote</exec_depend>
   <exec_depend>sfg_utils</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

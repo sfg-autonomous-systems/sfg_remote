@@ -1,12 +1,12 @@
-#include "sfg_universal_remote_control/universal_remote_control.hpp"
+#include "sfg_remote/remote.hpp"
 
 #include <SDL3/SDL.h>
 
-#include "sfg_universal_remote_control/app/universal_remote_control_gui.hpp"
+#include "sfg_remote/app/remote_gui.hpp"
 
-namespace sfg_universal_remote_control
+namespace sfg_remote
 {
-    UniversalRemoteControl::UniversalRemoteControl(const rclcpp::NodeOptions &options) : Node("universal_remote_control", options)
+    Remote::Remote(const rclcpp::NodeOptions &options) : Node("remote", options)
     {
         using namespace magic_enum::bitwise_operators;
 
@@ -14,7 +14,7 @@ namespace sfg_universal_remote_control
             get_name(),
             [this]()
             {
-                return std::make_unique<app::UniversalRemoteControlGui>(this);
+                return std::make_unique<app::RemoteGui>(this);
             },
             sfg_imgui_vendor::MainWindow::Flags::Resizable |
                 sfg_imgui_vendor::MainWindow::Flags::Gamepad |

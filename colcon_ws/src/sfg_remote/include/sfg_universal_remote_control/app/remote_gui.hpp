@@ -8,21 +8,21 @@
 #include <SDL3/SDL_joystick.h>
 
 #include "sfg_imgui_vendor/gui_element.hpp"
-#include "sfg_universal_remote_control/app/agent_manager.hpp"
-#include "sfg_universal_remote_control/app/image_feed.hpp"
+#include "sfg_remote/app/agent_manager.hpp"
+#include "sfg_remote/app/image_feed.hpp"
 
-namespace sfg_universal_remote_control::app
+namespace sfg_remote::app
 {
 
-    class UniversalRemoteControlGui : public sfg_imgui_vendor::GuiElement
+    class RemoteGui : public sfg_imgui_vendor::GuiElement
     {
     public:
-        UniversalRemoteControlGui(rclcpp::Node *node);
-        UniversalRemoteControlGui(const UniversalRemoteControlGui &) = delete;
-        UniversalRemoteControlGui &operator=(const UniversalRemoteControlGui &) = delete;
-        UniversalRemoteControlGui(UniversalRemoteControlGui &&) = delete;
-        UniversalRemoteControlGui &operator=(UniversalRemoteControlGui &&) = delete;
-        ~UniversalRemoteControlGui();
+        RemoteGui(rclcpp::Node *node);
+        RemoteGui(const RemoteGui &) = delete;
+        RemoteGui &operator=(const RemoteGui &) = delete;
+        RemoteGui(RemoteGui &&) = delete;
+        RemoteGui &operator=(RemoteGui &&) = delete;
+        ~RemoteGui();
 
     protected:
         void render_internal() override;

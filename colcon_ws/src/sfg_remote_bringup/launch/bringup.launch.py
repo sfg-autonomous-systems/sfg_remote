@@ -55,10 +55,10 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
-    universal_remote_control_node = ComposableNode(
-        package="sfg_universal_remote_control",
-        plugin="sfg_universal_remote_control::UniversalRemoteControl",
-        name="universal_remote_control",
+    remote = ComposableNode(
+        package="sfg_remote",
+        plugin="sfg_remote::Remote",
+        name="remote",
         namespace=local_namespace.build(RosFqnSegment.Scope, RosFqnSegment.Agent),
     )
 
@@ -77,7 +77,7 @@ def generate_launch_description() -> LaunchDescription:
                     *agent_launch_description_entities.composable_nodes,
                     agent_discoverer_node,
                     agent_decoder_node,
-                    universal_remote_control_node,
+                    remote,
                 ],
                 output="screen",
             ),

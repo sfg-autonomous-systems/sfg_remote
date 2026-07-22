@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(sfg_universal_remote_control)
+project(sfg_remote)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
@@ -28,13 +28,13 @@ find_package(cv_bridge REQUIRED)
 # ########################################################################################################
 # Add nodes and libraries.                                                                               #
 # ########################################################################################################
-sfg_utils__add_component("universal_remote_control" "${PROJECT_NAME}::UniversalRemoteControl"
+sfg_utils__add_component("remote" "${PROJECT_NAME}::Remote"
     SOURCES
     "src/app/agent_manager.cpp"
     "src/app/image_feed.cpp"
-    "src/app/universal_remote_control_gui.cpp"
-    "src/universal_remote_control.cpp"
-    "src/universal_remote_control_component.cpp"
+    "src/app/remote_gui.cpp"
+    "src/remote.cpp"
+    "src/remote_component.cpp"
     AMENT_DEPENDENCIES
     geometry_msgs
     image_transport

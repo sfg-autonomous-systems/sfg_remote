@@ -1,10 +1,10 @@
-#include "sfg_universal_remote_control/app/universal_remote_control_gui.hpp"
+#include "sfg_remote/app/remote_gui.hpp"
 
 #include "sfg_utils/fqn/ros_fqn_builder.hpp"
 
-namespace sfg_universal_remote_control::app
+namespace sfg_remote::app
 {
-    UniversalRemoteControlGui::UniversalRemoteControlGui(rclcpp::Node *node)
+    RemoteGui::RemoteGui(rclcpp::Node *node)
         : m_node(node),
           m_manager(node),
           m_image_feed(node),
@@ -13,7 +13,7 @@ namespace sfg_universal_remote_control::app
         initialize_gamepad();
     }
 
-    UniversalRemoteControlGui::~UniversalRemoteControlGui()
+    RemoteGui::~RemoteGui()
     {
         if (m_gamepad)
         {
@@ -22,7 +22,7 @@ namespace sfg_universal_remote_control::app
         }
     }
 
-    void UniversalRemoteControlGui::render_internal()
+    void RemoteGui::render_internal()
     {
         constexpr auto main_window_flags =
             ImGuiWindowFlags_NoResize |
@@ -46,7 +46,7 @@ namespace sfg_universal_remote_control::app
         render_selector_dialog();
     }
 
-    void UniversalRemoteControlGui::process_input()
+    void RemoteGui::process_input()
     {
         // Check for close request.
         if (SDL_GetGamepadButton(m_gamepad, SDL_GAMEPAD_BUTTON_EAST))
@@ -91,7 +91,7 @@ namespace sfg_universal_remote_control::app
         }
     }
 
-    void UniversalRemoteControlGui::render_overlay()
+    void RemoteGui::render_overlay()
     {
         ImGuiWindowFlags flags =
             ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -140,7 +140,7 @@ namespace sfg_universal_remote_control::app
         }
     }
 
-    void UniversalRemoteControlGui::render_video_frame()
+    void RemoteGui::render_video_frame()
     {
         // Update camera image feed if necessary.
         if (m_manager.is_new_image_available())
@@ -152,7 +152,7 @@ namespace sfg_universal_remote_control::app
         m_image_feed.render();
     }
 
-    void UniversalRemoteControlGui::render_selector_dialog()
+    void RemoteGui::render_selector_dialog()
     {
         if (m_show_selector_dialog)
         {
@@ -200,7 +200,7 @@ namespace sfg_universal_remote_control::app
         }
     }
 
-    void UniversalRemoteControlGui::initialize_gamepad()
+    void RemoteGui::initialize_gamepad()
     {
         auto joystick_count = 0;
         JoystickIdPtr joystick_id_list(SDL_GetJoysticks(&joystick_count));

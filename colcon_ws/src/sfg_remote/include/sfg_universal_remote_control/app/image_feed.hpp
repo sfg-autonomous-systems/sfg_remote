@@ -8,7 +8,7 @@
 
 #include "sfg_imgui_vendor/gui_element.hpp"
 
-namespace sfg_universal_remote_control::app
+namespace sfg_remote::app
 {
     class ImageFeed : public sfg_imgui_vendor::GuiElement
     {

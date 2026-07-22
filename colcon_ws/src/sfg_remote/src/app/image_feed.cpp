@@ -1,6 +1,6 @@
-#include "sfg_universal_remote_control/app/image_feed.hpp"
+#include "sfg_remote/app/image_feed.hpp"
 
-namespace sfg_universal_remote_control::app
+namespace sfg_remote::app
 {
     ImageFeed::ImageFeed(rclcpp::Node *node) : m_node(node)
     {

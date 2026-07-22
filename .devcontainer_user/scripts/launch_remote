@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-sfg_remote__launch_universal_remote_control() {
+sfg_remote__launch_remote() {
     local SCRIPT_DIR
     SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>"/dev/null" && pwd)"
     cd "${SCRIPT_DIR}/.."
@@ -16,5 +16,5 @@ sfg_remote__launch_universal_remote_control() {
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     set -e
-    sfg_remote__launch_universal_remote_control "${@}"
+    sfg_remote__launch_remote "${@}"
 fi
