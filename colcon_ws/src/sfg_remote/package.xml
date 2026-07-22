@@ -3,7 +3,7 @@
 <package format="3">
   <name>sfg_remote</name>
   <version>0.0.0</version>
-  <description>Contains the core functionality for the remote.</description>
+  <description>Contains the core functionality for the Remote.</description>
   <maintainer email="elgeit00@hs-esslingen.de">Elias Geiger</maintainer>
   <license>MIT</license>
 
