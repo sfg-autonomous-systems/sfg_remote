@@ -1,11 +1,11 @@
-# SFG Universal Remote Control
+# SFG Remote
 
 ## [Steam Deck](https://www.steamdeck.com/en/oled) Setup (Bazzite DX)
 1. [Download](https://download.bazzite.gg/bazzite-deck-stable-live-amd64.iso) and [install](https://docs.bazzite.gg/General/Installation_Guide/) Bazzite for Steam Deck (KDE Desktop). During installation, configure:
     
     - Display name: SFG Agent
     - Username: `sfg-agent`
-    - Hostname: `sfg-universal-remote-control-XX` (replace `XX` with the appropriate index for the given device, e.g. if it is the third universal remote control, choose `03`)
+    - Hostname: `sfg-remote-XX` (replace `XX` with the appropriate index for the given device, e.g. if it is the third remote, choose `03`)
 
 2. If prompted, create or log in with a Steam account.
 
@@ -33,7 +33,7 @@
 
 2. Open the repository in VS Code.
 
-3. Reopen the workspace in the included devcontainer through VS Code. The initialize command provides an option to create a desktop shortcut for the universal remote control.
+3. Reopen the workspace in the included devcontainer through VS Code. The initialize command provides an option to create a desktop shortcut for the remote.
 
 4. Build the workspace:
 
@@ -44,7 +44,7 @@
 5. Launch the application:
 
     ```bash
-    source "${COLCON_WS}/install/setup.bash" && ros2 launch sfg_universal_remote_control_bringup bringup.launch.py
+    source "${COLCON_WS}/install/setup.bash" && ros2 launch sfg_remote_bringup bringup.launch.py
     ```
 
 **Note:** If started via the desktop shortcut alone, the container and software stack are not built automatically. Run the VS Code dev container workflow at least once beforehand.
@@ -53,11 +53,11 @@
 
 ## Agent Usage
 
-Use gamepad mode when running the universal remote control application.
+Use gamepad mode when running the remote application.
 
-### Universal Remote Control Inputs
+### Remote Inputs
 
-| Control (Steam Deck) | SDL input | Action in universal remote control |
+| Control (Steam Deck) | SDL input | Action |
 |---|---|---|
 | B button | `SDL_GAMEPAD_BUTTON_EAST` | Requests application shutdown (pushes `SDL_EVENT_QUIT` and triggers ROS shutdown). |
 | X button | `SDL_GAMEPAD_BUTTON_WEST` | Opens the agent selector dialog. |
