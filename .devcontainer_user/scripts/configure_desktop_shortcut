@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sfg_universal_remote_control__configure_desktop_shortcut() {
+sfg_remote__configure_desktop_shortcut() {
     local SCRIPT_DIR
     SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>"/dev/null" && pwd)"
     source "${SCRIPT_DIR}/../../.devcontainer/scripts/bash_utils/common"
@@ -18,7 +18,7 @@ sfg_universal_remote_control__configure_desktop_shortcut() {
 
     local desktop_dir
     desktop_dir=$(xdg-user-dir DESKTOP 2>"/dev/null" || echo "${HOME}/Desktop")
-    local desktop_filepath="${desktop_dir}/universal_remote_control.desktop"
+    local desktop_filepath="${desktop_dir}/sfg_remote.desktop"
 
     # Check if the desktop entry already exists.
     if [[ -f "${desktop_filepath}" ]]; then
@@ -42,8 +42,8 @@ sfg_universal_remote_control__configure_desktop_shortcut() {
         fi
 
         sfg_bash_utils__print_plain "Creating desktop shortcut..."
-        local DESKTOP_TEMPLATE="${SCRIPT_DIR}/../config/universal_remote_control.desktop.template"
-        local CMD="${SCRIPT_DIR}/launch_universal_remote_control"
+        local DESKTOP_TEMPLATE="${SCRIPT_DIR}/../assets/desktop.template"
+        local CMD="${SCRIPT_DIR}/launch_remote"
         local ICON_FILEPATH="${SCRIPT_DIR}/../assets/icon.svg"
 
         # shellcheck disable=SC2016
@@ -60,5 +60,5 @@ sfg_universal_remote_control__configure_desktop_shortcut() {
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     set -e
-    sfg_universal_remote_control__configure_desktop_shortcut "${@}"
+    sfg_remote__configure_desktop_shortcut "${@}"
 fi
