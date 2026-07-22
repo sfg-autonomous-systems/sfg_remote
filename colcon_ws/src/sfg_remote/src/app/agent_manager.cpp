@@ -1,7 +1,7 @@
-#include "sfg_universal_remote_control/app/agent_manager.hpp"
+#include "sfg_remote/app/agent_manager.hpp"
 #include "sfg_utils/fqn/ros_fqn_builder.hpp"
 
-namespace sfg_universal_remote_control::app
+namespace sfg_remote::app
 {
     AgentManager::AgentManager(rclcpp::Node *node) : m_node(node)
     {

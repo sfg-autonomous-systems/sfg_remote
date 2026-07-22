@@ -10,7 +10,7 @@
 #include "sfg_agent_msgs/srv/get_discovered_agents.hpp"
 #include "sfg_agent_msgs/srv/trigger_action.hpp"
 
-namespace sfg_universal_remote_control::app
+namespace sfg_remote::app
 {
     class AgentManager
     {
