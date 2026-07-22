@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-sfg_universal_remote_control__initialize_command() {
+sfg_remote__initialize_command() {
     local SCRIPT_DIR
     SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>"/dev/null" && pwd)"
     source "${SCRIPT_DIR}/scripts/configure_desktop_shortcut"
 
-    sfg_universal_remote_control__configure_desktop_shortcut
+    sfg_remote__configure_desktop_shortcut
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     set -e
-    sfg_universal_remote_control__initialize_command "${@}"
+    sfg_remote__initialize_command "${@}"
 fi
