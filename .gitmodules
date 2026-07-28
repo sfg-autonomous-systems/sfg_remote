@@ -1,9 +1,9 @@
 [submodule "colcon_ws/src/sfg_agent_common"]
 	path = colcon_ws/src/sfg_agent_common
-	url = ../../sfg-autonomous-systems/sfg_agent_common.git
+	url = ../sfg_agent_common.git
 [submodule "colcon_ws/src/sfg_imgui_vendor"]
 	path = colcon_ws/src/sfg_imgui_vendor
-	url = ../../sfg-autonomous-systems/sfg_imgui_vendor.git
+	url = ../sfg_imgui_vendor.git
 [submodule ".devcontainer"]
 	path = .devcontainer
-	url = ../../sfg-autonomous-systems/sfg_agent_devcontainer.git
+	url = ../sfg_agent_devcontainer.git
