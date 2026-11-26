@@ -18,9 +18,9 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(sfg_agent_msgs REQUIRED)
+find_package(sfg_hardware_interface_msgs REQUIRED)
 find_package(sfg_imgui_vendor REQUIRED)
 find_package(sfg_utils REQUIRED)
-find_package(std_msgs REQUIRED)
 
 # ########################################################################################################
 # Add nodes and libraries.                                                                               #
@@ -33,21 +33,26 @@ sfg_utils__add_component("remote" "${PROJECT_NAME}::Remote"
     "src/remote.cpp"
     "src/remote_component.cpp"
     DEPENDENCIES
+    PRIVATE
+    rclcpp_components::component
+    sfg_utils::sfg_utils
+    PUBLIC
     cv_bridge::cv_bridge
     ${geometry_msgs_TARGETS}
     image_transport::image_transport
     rclcpp::rclcpp
-    rclcpp_components::component
     ${sensor_msgs_TARGETS}
     ${sfg_agent_msgs_TARGETS}
+    ${sfg_hardware_interface_msgs_TARGETS}
     sfg_imgui_vendor::sfg_imgui_vendor
-    sfg_utils::sfg_utils
-    ${std_msgs_TARGETS}
     EXPORT_DEPENDENCIES
     cv_bridge
     geometry_msgs
     image_transport
     rclcpp
+    sensor_msgs
+    sfg_agent_msgs
+    sfg_hardware_interface_msgs
     sfg_imgui_vendor
 )
 

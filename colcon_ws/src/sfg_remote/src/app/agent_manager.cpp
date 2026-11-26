@@ -61,7 +61,7 @@ namespace sfg_remote::app
         // Recreate the trigger-action service client and arm the newly selected agent.
         using namespace sfg_utils::fqn;
 
-        m_trigger_action_client = m_node->create_client<sfg_agent_msgs::srv::TriggerAction>(
+        m_trigger_action_client = m_node->create_client<sfg_hardware_interface_msgs::srv::TriggerAction>(
             RosFqnBuilder()
                 .scope(Scope::Global)
                 .component(Component::LocomotionController)
@@ -161,13 +161,13 @@ namespace sfg_remote::app
         }
 
         // Create request for arming service.
-        auto request = std::make_shared<sfg_agent_msgs::srv::TriggerAction::Request>();
+        auto request = std::make_shared<sfg_hardware_interface_msgs::srv::TriggerAction::Request>();
         request->action = "arm";
 
         // Request arming service.
         auto future = m_trigger_action_client->async_send_request(
             request,
-            [this](rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedFuture future)
+            [this](rclcpp::Client<sfg_hardware_interface_msgs::srv::TriggerAction>::SharedFuture future)
             {
                 if (!future.valid())
                 {
@@ -179,19 +179,19 @@ namespace sfg_remote::app
 
                 switch (result)
                 {
-                    case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
+                    case sfg_hardware_interface_msgs::srv::TriggerAction_Response::FAILURE:
                     {
                         RCLCPP_ERROR(m_node->get_logger(), "Arming failed!");
                         m_is_armed = false;
                         break;
                     }
-                    case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
+                    case sfg_hardware_interface_msgs::srv::TriggerAction_Response::SUCCESS:
                     {
                         RCLCPP_INFO(m_node->get_logger(), "Arming successful.");
                         m_is_armed = true;
                         break;
                     }
-                    case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
+                    case sfg_hardware_interface_msgs::srv::TriggerAction_Response::UNSUPPORTED:
                     {
                         RCLCPP_INFO(m_node->get_logger(), "Arming not implemented (ignored).");
                         m_is_armed = true;
@@ -214,13 +214,13 @@ namespace sfg_remote::app
         }
 
         // Create request for disarm service.
-        auto request = std::make_shared<sfg_agent_msgs::srv::TriggerAction::Request>();
+        auto request = std::make_shared<sfg_hardware_interface_msgs::srv::TriggerAction::Request>();
         request->action = "disarm";
 
         // Request disarm service.
         auto future = m_trigger_action_client->async_send_request(
             request,
-            [this](rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedFuture future)
+            [this](rclcpp::Client<sfg_hardware_interface_msgs::srv::TriggerAction>::SharedFuture future)
             {
                 if (!future.valid())
                 {
@@ -232,18 +232,18 @@ namespace sfg_remote::app
 
                 switch (result)
                 {
-                    case sfg_agent_msgs::srv::TriggerAction_Response::FAILURE:
+                    case sfg_hardware_interface_msgs::srv::TriggerAction_Response::FAILURE:
                     {
                         RCLCPP_ERROR(m_node->get_logger(), "Disarming failed!");
                         break;
                     }
-                    case sfg_agent_msgs::srv::TriggerAction_Response::SUCCESS:
+                    case sfg_hardware_interface_msgs::srv::TriggerAction_Response::SUCCESS:
                     {
                         RCLCPP_INFO(m_node->get_logger(), "Disarming successful.");
                         m_is_armed = false;
                         break;
                     }
-                    case sfg_agent_msgs::srv::TriggerAction_Response::UNSUPPORTED:
+                    case sfg_hardware_interface_msgs::srv::TriggerAction_Response::UNSUPPORTED:
                     {
                         RCLCPP_INFO(m_node->get_logger(), "Disarming not implemented (ignored).");
                         m_is_armed = true;
