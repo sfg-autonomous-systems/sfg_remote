@@ -14,9 +14,9 @@
   <depend>rclcpp_components</depend>
   <depend>sensor_msgs</depend>
   <depend>sfg_agent_msgs</depend>
+  <depend>sfg_hardware_interface_msgs</depend>
   <depend>sfg_imgui_vendor</depend>
   <depend>sfg_utils</depend>
-  <depend>std_msgs</depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

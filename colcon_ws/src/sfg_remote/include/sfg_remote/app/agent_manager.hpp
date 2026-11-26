@@ -8,7 +8,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "sfg_agent_msgs/srv/get_discovered_agents.hpp"
-#include "sfg_agent_msgs/srv/trigger_action.hpp"
+#include "sfg_hardware_interface_msgs/srv/trigger_action.hpp"
 
 namespace sfg_remote::app
 {
@@ -50,7 +50,7 @@ namespace sfg_remote::app
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_subscriber;
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr m_cmd_vel_publisher;
         rclcpp::Client<sfg_agent_msgs::srv::GetDiscoveredAgents>::SharedPtr m_get_discovered_agents_client;
-        rclcpp::Client<sfg_agent_msgs::srv::TriggerAction>::SharedPtr m_trigger_action_client;
+        rclcpp::Client<sfg_hardware_interface_msgs::srv::TriggerAction>::SharedPtr m_trigger_action_client;
 
         std::map<std::string, sfg_agent_msgs::msg::Metadata> m_agents;
         std::string m_selected_agent_name = "";
